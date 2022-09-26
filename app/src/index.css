@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Montserrat', 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply bg-stone-100;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@layer components{
+  .btn-yellow{
+    @apply px-5 py-2 bg-mds-yellow rounded-lg hover:bg-yellow-300 cursor-pointer;
+  }
+
+  .btn-disabled{
+    @apply px-5 py-2 bg-gray-400 rounded-lg cursor-pointer;
+  }
+
+  .btn-blue-dark{
+    @apply px-5 py-1 bg-mds-blue text-white rounded-md hover:bg-mds-blue-dark text-lg cursor-pointer;
+  }
+
+  .btn-red-light{
+    @apply px-5 py-1 bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white text-lg;
+  }
+
+  .input-text{
+    @apply mt-1 px-3 py-1 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1;
+  }
+
+  .input-select{
+    @apply mt-1 px-3 py-1  bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1;
+  }
+
+  .icon-no-start{
+    @apply mx-auto py-1 px-4 text-white text-2xl font-semibold bg-gray-500 w-12 h-12 rounded-full flex items-center justify-center absolute right-2 top-2;
+  }
+
+  .icon-start{
+    @apply mx-auto py-1 px-4 text-white text-2xl font-semibold bg-green-500 w-12 h-12 rounded-full flex items-center justify-center absolute right-2 top-2;
+  }
+
+  .icon-close{
+    @apply mx-auto py-1 px-4 text-white text-2xl font-semibold bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center absolute right-2 top-2;
+  }
+}
+
+.spinner{
+  border: 4px solid rgb(0, 0, 0, .1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #e4a72b;
+
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0%{
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}
