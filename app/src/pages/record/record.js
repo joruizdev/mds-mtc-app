@@ -70,6 +70,7 @@ const Record = () => {
       setTypeUer(user.typeuser)
       showRecords()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, reload])
 
   const showRecords = async () => {

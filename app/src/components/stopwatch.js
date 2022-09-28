@@ -68,6 +68,7 @@ function Stopwatch ({
       reset(stopwatchOffset)
       pause()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleStart = async () => {
