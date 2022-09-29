@@ -19,14 +19,13 @@ const RecordForm = ({ token, records, campus }) => {
     }
   })
 
-  console.log(records.length)
-
   const [messageNoFound, setMessageNoFound] = useState('')
   const navigate = useNavigate()
   const txtNroDoc = useRef()
 
   const onSubmit = async data => {
-    const result = await records.filter(record => record.postulant.nrodoc === txtNroDoc.current.value && record.canceled === false)
+    const nroDoc = txtNroDoc.current.value
+    const result = await records.filter(record => record.postulant.nrodoc === nroDoc.trim() && record.canceled === false)
     if (result.length > 0) {
       return messageAlert('Ya existe un record del postulante con fecha de hoy', 'error')
     }
@@ -53,7 +52,8 @@ const RecordForm = ({ token, records, campus }) => {
   }
 
   const searchPostulant = async () => {
-    const data = { nrodoc: txtNroDoc.current.value }
+    const nroDoc = txtNroDoc.current.value
+    const data = { nrodoc: nroDoc.trim() }
     const postulant = await postRequest('postulants/bynrodoc', data, token)
 
     if (postulant.length > 0) {

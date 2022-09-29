@@ -52,7 +52,7 @@ const Postulant = () => {
   const columns = [
     {
       name: 'Apellidos y Nombres',
-      selector: row => row.name + ' ' + row.lastname,
+      selector: row => <span className='capitalize'>{String(row.name + ' ' + row.lastname).toLowerCase()}</span>,
       sortable: true
     },
     {

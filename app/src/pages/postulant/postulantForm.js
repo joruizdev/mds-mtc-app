@@ -35,18 +35,17 @@ const PostulantForm = ({ token, reload, data }) => {
   const showEditPostulant = () => {
     setTitleForm('Actualizar datos de postulante')
     setValue('id', data.id)
-    setValue('name', data.name)
-    setValue('lastname', data.lastname)
+    setValue('name', String(data.name).toLowerCase())
+    setValue('lastname', String(data.lastname).toLowerCase())
     setValue('typedoc', data.typedoc)
     setValue('nrodoc', data.nrodoc)
     setValue('gender', data.gender)
     setValue('telephone', data.telephone)
-    setValue('adress', data.adress)
+    setValue('adress', String(data.adress).toLowerCase())
     setValue('dateofbirth', new Date(data.dateofbirth).toISOString().split('T')[0])
   }
 
   const onSubmit = data => {
-    console.log(data)
     titleForm === 'Registrar nuevo postulante' ? save(data) : update(data)
   }
 
@@ -84,6 +83,7 @@ const PostulantForm = ({ token, reload, data }) => {
     resetField('nrodoc')
     resetField('gender')
     resetField('telephone')
+    resetField('dateregister')
     resetField('adress')
     resetField('dateofbirth')
     data = []
@@ -172,8 +172,7 @@ const PostulantForm = ({ token, reload, data }) => {
                 type='text'
                 className='input-text'
                 {...register('nrodoc', {
-                  required: true,
-                  valueAsNumber: true
+                  required: true
                 })}
               />
               {errors?.nrodoc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
@@ -231,6 +230,23 @@ const PostulantForm = ({ token, reload, data }) => {
               />
               {errors?.telephone?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
               {errors?.telephone?.type === 'valueAsNumber' && <p className='text-red-500 text-sm'>Solo se aceptan números</p>}
+            </div>
+          </div>
+
+          <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
+            <div className='flex flex-col mb-3'>
+              <span className='text-sm font-medium text-gray-700'>
+                Fecha de registro
+              </span>
+              <input
+                type='date'
+                className='input-text'
+                defaultValue={new Date().toISOString().split('T')[0]}
+                {...register('dateregister', {
+                  required: true
+                })}
+              />
+              {errors?.dateofbirth?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
             </div>
           </div>
 

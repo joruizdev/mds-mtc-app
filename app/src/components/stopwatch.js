@@ -159,8 +159,8 @@ function Stopwatch ({
         <div className={classOrder}>{order}</div>
         <div className='pt-4'>
           <p>Nombres:
-            <strong>
-              {' ' + postulant.name + ' ' + postulant.lastname}
+            <strong className='capitalize'>
+              {' ' + String(postulant.name + ' ' + postulant.lastname).toLowerCase()}
             </strong>
           </p>
           <p>Nro de documento:

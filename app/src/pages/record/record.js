@@ -15,6 +15,9 @@ const Record = () => {
   const [reload, setReload] = useState(false)
 
   const [query, setQuery] = useState('')
+  // eslint-disable-next-line no-unused-vars
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [count, setCount] = useState(0)
 
   // eslint-disable-next-line no-unused-vars
   const search = data => {
@@ -68,16 +71,21 @@ const Record = () => {
       setToken(user.token)
       setCampus(user.campus)
       setTypeUer(user.typeuser)
-      console.log(token)
+      console.log(date)
       showRecords()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, reload])
+  }, [token, reload, date])
 
   const showRecords = async () => {
+    setCount(count + 1)
+    console.table(date)
     if (token) {
+      const newDate = count === 1
+        ? new Date().toLocaleDateString().split('/').reverse().join('-')
+        : date
       const data = {
-        dateStart: new Date().toLocaleDateString().split('/').reverse().join('-')
+        dateStart: newDate
       }
 
       const records = await postRequest('records/bydate', data, token)
@@ -91,17 +99,32 @@ const Record = () => {
   const columns = [
     {
       name: 'Apellidos y Nombres',
-      selector: row => row.postulant.name + ' ' + row.postulant.lastname,
+      selector: row => <span className='capitalize'>{String(row.postulant.name + ' ' + row.postulant.lastname).toLowerCase()}</span>,
       sortable: true
     },
     {
-      name: 'Tipo de Documento',
+      name: 'Tipo de documento',
       selector: row => row.postulant.typedoc,
       sortable: true
     },
     {
       name: 'Nro. de Documento',
       selector: row => row.postulant.nrodoc,
+      sortable: true
+    },
+    {
+      name: 'Tipo de Lic.',
+      selector: row => row.typelic,
+      sortable: true
+    },
+    {
+      name: 'Tipo de proc.',
+      selector: row => row.typeproc,
+      sortable: true
+    },
+    {
+      name: 'Fecha',
+      selector: row => String(new Date(row.date).toISOString().split('T')[0]).split('-').reverse().join('/'),
       sortable: true
     },
     {
@@ -131,25 +154,30 @@ const Record = () => {
     <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
       <RecordForm token={token} records={records} campus={campus} />
       <div className='py-10 relative'>
-        <div className='flex absolute right-0 z-10'>
-          <div className=''>
-            <div className='flex flex-col mb-3'>
-              <input
-                type='text'
-                className='input-text'
-                placeholder='Buscar'
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-          </div>
+        <div className='flex flex-col z-10 gap-4 mb-3 sm:flex-row md:flex-row lg:flex-row xl:flex-row lg:w-96 xl:w-96 lg:absolute xl:absolute lg:right-0 xl:right-0'>
+          <input
+            type='date'
+            className='input-text'
+            defaultValue={date}
+            pattern='\d{4}-\d{2}-\d{2}'
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <input
+            type='text'
+            className='input-text'
+            placeholder='Buscar'
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
-        <DataTable
-          title='Lista de postulantes'
-          columns={columns}
-          data={search(records)}
-          pagination
-          highlightOnHover
-        />
+        <div className=''>
+          <DataTable
+            title='Lista de postulantes'
+            columns={columns}
+            data={search(records)}
+            pagination
+            highlightOnHover
+          />
+        </div>
       </div>
     </div>
   )

@@ -37,7 +37,7 @@ postulantsRouter.put('/:id', userExtractor, async (req, response, next) => {
     gender: postulant.gender,
     telephone: postulant.telephone,
     adress: postulant.adress,
-    dateregister: new Date().toISOString()
+    dateregister: new Date(postulant.dateregister).toISOString()
   }
 
   try {
@@ -65,6 +65,7 @@ postulantsRouter.post('/', userExtractor, async (req, res, next) => {
     gender,
     telephone,
     adress,
+    dateregister,
     recordId
   } = req.body
 
@@ -87,7 +88,7 @@ postulantsRouter.post('/', userExtractor, async (req, res, next) => {
     gender,
     telephone,
     adress,
-    dateregister: new Date().toISOString(),
+    dateregister: new Date(dateregister).toISOString(),
     user: user._id,
     records: recordId
   })
