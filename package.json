@@ -19,7 +19,6 @@
     "dev:api": "npm run build && npm run dev --workspaces=api"
   },
   "eslintConfig": {
-    "ignorePatterns": "build",
     "extends": [
       "react-app",
       "react-app/jest",

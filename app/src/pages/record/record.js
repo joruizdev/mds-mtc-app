@@ -68,6 +68,7 @@ const Record = () => {
       setToken(user.token)
       setCampus(user.campus)
       setTypeUer(user.typeuser)
+      console.log(token)
       showRecords()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
