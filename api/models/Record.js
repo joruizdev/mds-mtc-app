@@ -24,6 +24,7 @@ const recordSchema = new Schema({
   closed: Boolean,
   canceled: Boolean,
   order: Number,
+  observations: String,
   postulant: {
     type: Schema.Types.ObjectId,
     ref: 'Postulant'

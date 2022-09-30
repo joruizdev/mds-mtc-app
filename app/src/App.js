@@ -7,6 +7,7 @@ import Postulant from './pages/postulant/postulant'
 import Login from './pages/login/login'
 import Record from './pages/record/record'
 import User from './pages/user/user'
+import Reports from './pages/reports/reports'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -34,6 +35,7 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/postulant' element={<Postulant />} />
             <Route path='/record' element={<Record />} />
+            <Route path='/reports' element={<Reports />} />
             <Route path='/user' element={<User />} />
             <Route path='*'>No found</Route>
           </Routes>

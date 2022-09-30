@@ -7,6 +7,7 @@ const Nav = ({ typeuser }) => {
         <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/'>Inicio</Link></li>
         <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/postulant'>Postulante</Link></li>
         <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/record'>Record</Link></li>
+        <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/reports'>Reportes</Link></li>
         {
           typeuser.toLowerCase() === 'soporte' && <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/user'>Usuario</Link></li>
         }

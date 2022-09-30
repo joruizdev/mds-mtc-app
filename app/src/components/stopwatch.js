@@ -4,6 +4,7 @@ import { useStopwatch } from 'react-timer-hook'
 import ButtonStopwatch from './buttonStopwatch'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import iconAlarm from '../aseets/icon-alarm.gif'
 
 function Stopwatch ({
   id, postulant, typelic, date, timestart, timeend, timeclose, initiated, closed, canceled, order, click, typeuser, token
@@ -85,7 +86,6 @@ function Stopwatch ({
       }
       await putRequest('records', newData, token)
         .then(data => {
-          console.log(data)
           setNewTimeStart(new Date())
           setNewInitiated(true)
           setNewTimeEnd(newTime)
@@ -155,7 +155,7 @@ function Stopwatch ({
 
   return (
     <>
-      <div className='relative flex flex-col text-sm leading-6 items-start bg-white py-5 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2'>
+      <div className='relative flex flex-col text-sm leading-6 items-start bg-white py-10 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2'>
         <div className={classOrder}>{order}</div>
         <div className='pt-4'>
           <p>Nombres:
@@ -196,22 +196,31 @@ function Stopwatch ({
               />
           }
         </div>
-        <div className='pt-4'>
-          <p>Inicio de ficha:
-            <strong>
-              {newInitiated === true ? `${newTimeStart.toLocaleTimeString()}` : ''}
-            </strong>
-          </p>
-          <p>Cierre máximo de ficha:
-            <strong>
-              {newInitiated === true ? `${newTimeEnd.toLocaleTimeString()}` : ''}
-            </strong>
-          </p>
-          <p>Cierre de ficha:
-            <strong>
-              {newClosed === true ? `${newTimeClose.toLocaleTimeString()}` : ''}
-            </strong>
-          </p>
+        <div className='flex pt-4 justify-between items-center w-full'>
+          <div className=''>
+            <p>Inicio de ficha:
+              <strong>
+                {newInitiated === true ? `${newTimeStart.toLocaleTimeString()}` : ''}
+              </strong>
+            </p>
+            <p>Cierre máximo de ficha:
+              <strong>
+                {newInitiated === true ? `${newTimeEnd.toLocaleTimeString()}` : ''}
+              </strong>
+            </p>
+            <p>Cierre de ficha:
+              <strong>
+                {newClosed === true ? `${newTimeClose.toLocaleTimeString()}` : ''}
+              </strong>
+            </p>
+          </div>
+          <div className=''>
+            {
+              Number(String(hours) + (String(minutes).length === 1 ? `0${minutes}` : minutes) + (String(seconds).length === 1 ? `0${seconds}` : seconds)) > 31500 && !closed
+                ? <img src={iconAlarm} alt='Icon-alarm' className='h-20' />
+                : ''
+            }
+          </div>
         </div>
       </div>
     </>

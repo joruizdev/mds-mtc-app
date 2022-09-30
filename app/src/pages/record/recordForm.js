@@ -166,6 +166,19 @@ const RecordForm = ({ token, records, campus }) => {
             </div>
             {errors?.typeproc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
           </div>
+
+          <div className='col-span-12'>
+            <div className='flex flex-col mb-3'>
+              <span className='text-sm font-medium text-gray-700'>
+                Observaciones
+              </span>
+              <input
+                type='text'
+                className='input-text'
+                {...register('observations')}
+              />
+            </div>
+          </div>
         </div>
         <div className='flex pt-5 gap-4'>
           <button
