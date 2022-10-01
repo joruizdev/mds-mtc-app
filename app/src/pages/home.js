@@ -39,7 +39,8 @@ const Home = () => {
     const dateStart = counter === 0 ? date : txtDate.current.value
     if (token) {
       const data = {
-        dateStart
+        dateStart,
+        dateEnd: dateStart
       }
 
       const records = await postRequest('records/bydate', data, token)

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
-import ExportToExcel from '../../components/exportToExcel'
+// import ExportToExcel from '../../components/exportToExcel'
 import { postRequest } from '../../services/services'
-
 const Reports = () => {
   const [token, setToken] = useState()
   const [reload, setReload] = useState()
@@ -11,7 +10,6 @@ const Reports = () => {
   const [records, setRecords] = useState()
   const [dateStart, setDateStart] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
-  const [newDataExport, setNewDataExport] = useState([])
 
   useEffect(() => {
     setReload(false)
@@ -24,7 +22,7 @@ const Reports = () => {
       showRecords()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, reload])
+  }, [token, reload, dateEnd, dateStart])
 
   const showRecords = async () => {
     if (token) {
@@ -34,34 +32,7 @@ const Reports = () => {
       campus.toLowerCase() === 'todos'
         ? setRecords(records)
         : setRecords(records.filter(elem => elem.campus === campus))
-      setDataExport()
     }
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  //  postulant
-  const setDataExport = () => {
-    console.log(records)
-    // eslint-disable-next-line array-callback-return
-    records.map(record => {
-      console.log(record.campus)
-      const newRecord = {
-        Local: record.campus,
-        Estado: (record.canceled) ? 'Cancelado' : (record.initiated ? 'Iniciado' : 'Cerrado'),
-        Fecha: new Date(record.date).toLocaleDateString(),
-        Orden: record.order,
-        HoraInicio: new Date(record.timestart).toLocaleTimeString(),
-        HoraAproxCierre: new Date(record.timeclose).toLocaleTimeString(),
-        HoraFinal: new Date(record.timeend).toLocaleTimeString(),
-        TipoLic: record.typelic,
-        TipoProc: record.typeproc,
-        Postulante: record.postulant.lastname + record.postulant.name,
-        TipoDoc: record.postulant.typedoc,
-        NroDoc: record.postulant.nrodoc
-      }
-      setNewDataExport(newDataExport.concat(newRecord))
-    })
-    console.log(newDataExport)
   }
 
   const columns = [
@@ -147,14 +118,8 @@ const Reports = () => {
             />
           </div>
         </div>
-        <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
-          <div className='flex flex-col mb-3'>
-            <br />
-            <input type='submit' className='btn-blue-dark' value='Buscar' />
-          </div>
-        </div>
       </div>
-      <ExportToExcel data={newDataExport} fileName='Lista de records' />
+      {/* <ExportToExcel data={newDataExport} fileName='Lista de records' /> */}
       <div>
         <DataTable
           title='Lista de records'

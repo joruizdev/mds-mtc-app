@@ -79,13 +79,13 @@ const Record = () => {
 
   const showRecords = async () => {
     setCount(count + 1)
-    console.table(date)
     if (token) {
       const newDate = count === 1
         ? new Date().toLocaleDateString().split('/').reverse().join('-')
         : date
       const data = {
-        dateStart: newDate
+        dateStart: newDate,
+        dateEnd: newDate
       }
 
       const records = await postRequest('records/bydate', data, token)

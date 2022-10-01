@@ -25,11 +25,11 @@ recordRouter.get('/:id', userExtractor, (req, res, next) => {
 
 // Search by date
 recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
-  const { dateStart } = req.body
-  const newDateStart = new Date(dateStart)
-  const dateEnd = new Date(newDateStart.setDate(newDateStart.getDate() + 1))
+  const { dateStart, dateEnd } = req.body
+  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+
   Record.find(
-    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: dateEnd.toISOString() } }] }).populate('postulant', {
+    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] }).populate('postulant', {
     _id: 1,
     name: 1,
     lastname: 1,
