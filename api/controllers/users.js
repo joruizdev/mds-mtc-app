@@ -123,6 +123,25 @@ usersRouter.put('/:id', userExtractor, async (req, response, next) => {
     })
 })
 
+usersRouter.put('/changepassword/:id', userExtractor, async (req, response, next) => {
+  const { id } = req.params
+  const user = req.body
+  const { password } = user
+
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash(password, saltRounds)
+
+  const newUserInfo = { passwordHash }
+
+  User.findByIdAndUpdate(id, newUserInfo, { new: true })
+    .then(res => {
+      response.json(res)
+    }).catch(err => {
+      console.log(err)
+      next(err)
+    })
+})
+
 usersRouter.delete('/id', userExtractor, async (req, res, next) => {
   const { id } = req.params
   const user = req.body

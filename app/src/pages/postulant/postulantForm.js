@@ -266,18 +266,18 @@ const PostulantForm = ({ token, reload, data }) => {
             </div>
           </div>
         </div>
-        <div className='flex pt-5 gap-4'>
+        <div className='flex flex-col pt-5 gap-4 w-full md:flex-row lg:w-80'>
           <button
             type='button'
-            className='btn-red-light'
+            className='btn-red-light w-full'
             onClick={handleCancel}
           >
             Cancelar
           </button>
           {
             titleForm === 'Registrar nuevo postulante'
-              ? <input type='submit' className='btn-blue-dark' value='Guardar' />
-              : <input type='submit' className='btn-blue-dark' value='Actualizar' />
+              ? <input type='submit' className='btn-blue-dark w-full' value='Guardar' />
+              : <input type='submit' className='btn-blue-dark w-full' value='Actualizar' />
             }
         </div>
       </form>

@@ -1,6 +1,3 @@
-import * as FileSaver from 'file-saver'
-import * as XLSX from 'xlsx'
-
 export const getRequest = async url => {
   try {
     // const response = await fetch(`${process.env.REACT_APP_URL_API}${url}`)
@@ -83,21 +80,22 @@ export const putRequest = async (url, requestData, token) => {
   }
 }
 
-export const exportToExcel = (data, fileName) => {
+export const putRequestChangePassword = async (url, requestData, token) => {
+  const settings = {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(requestData)
+  }
   try {
-    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-    const fileExtension = '.xlsx'
-
-    const exportToCSV = (apiData, fileName) => {
-      const ws = XLSX.utils.json_to_sheet(apiData)
-      const wb = { Sheets: { data: ws }, SheetNames: ['data'] }
-      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-      const data = new Blob([excelBuffer], { type: fileType })
-      FileSaver.saveAs(data, fileName + fileExtension)
-    }
-
-    return exportToCSV(data, fileName)
+    const response = await fetch(`${url}/${requestData.id}`, settings)
+    const data = await response.json()
+    return data
   } catch (e) {
+    console.log(e)
     return e
   }
 }

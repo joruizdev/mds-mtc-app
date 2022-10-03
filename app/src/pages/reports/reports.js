@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
-// import ExportToExcel from '../../components/exportToExcel'
+import ExportToExcel from '../../components/exportToExcel'
 import { postRequest } from '../../services/services'
 const Reports = () => {
   const [token, setToken] = useState()
   const [reload, setReload] = useState()
   const [campus, setCampus] = useState()
-  // eslint-disable-next-line no-unused-vars
-  const [records, setRecords] = useState()
+  const [records, setRecords] = useState([])
   const [dateStart, setDateStart] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
+  const [newRecords, setNewRecords] = useState([])
 
   useEffect(() => {
     setReload(false)
@@ -27,11 +27,29 @@ const Reports = () => {
   const showRecords = async () => {
     if (token) {
       const data = { dateStart, dateEnd }
-      const records = await postRequest('records/bydate', data, token)
+      const dataRecords = await postRequest('records/bydate', data, token)
 
       campus.toLowerCase() === 'todos'
-        ? setRecords(records)
-        : setRecords(records.filter(elem => elem.campus === campus))
+        ? setRecords(dataRecords)
+        : setRecords(dataRecords.filter(elem => elem.campus === campus))
+
+      setNewRecords([])
+      // eslint-disable-next-line array-callback-return
+      dataRecords.map(elem => {
+        const record = {
+          Fecha: elem.date,
+          Local: elem.campus,
+          NroOrden: elem.order,
+          TipoLic: elem.typelic,
+          TipoProc: elem.typeproc,
+          HoraInicio: elem.timestart,
+          HoraFinal: elem.timeend,
+          HoraCierre: elem.timeclose
+        }
+        setNewRecords(newRecords => newRecords.concat(record))
+      })
+
+      campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
     }
   }
 
@@ -119,15 +137,19 @@ const Reports = () => {
           </div>
         </div>
       </div>
-      {/* <ExportToExcel data={newDataExport} fileName='Lista de records' /> */}
-      <div>
-        <DataTable
-          title='Lista de records'
-          columns={columns}
-          data={records}
-          pagination
-          highlightOnHover
-        />
+      <div className='relative py-10'>
+        <div className='flex absolute right-0 z-10'>
+          <ExportToExcel data={newRecords} fileName='Lista de records' />
+        </div>
+        <div>
+          <DataTable
+            title='Lista de records'
+            columns={columns}
+            data={records}
+            pagination
+            highlightOnHover
+          />
+        </div>
       </div>
     </div>
   )

@@ -1,20 +1,23 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { postRequest, putRequest } from '../../services/services'
+import { postRequest, putRequest, putRequestChangePassword } from '../../services/services'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const UserForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo usuario')
   const [firstLoad, setFirstLoad] = useState(false)
+  const [changePassword, setChangePassword] = useState(false)
+  const txtPassword = useRef()
 
   const {
     register,
     handleSubmit,
     resetField,
     setValue,
+    getValues,
     formState: { errors }
   } = useForm({
     mode: 'onChange',
@@ -47,6 +50,7 @@ const UserForm = ({ token, reload, data }) => {
     setValue('adress', data.adress)
     setValue('password', 'medicossalud')
     setValue('active', data.active)
+    setChangePassword(true)
   }
 
   const onSubmit = data => {
@@ -69,12 +73,12 @@ const UserForm = ({ token, reload, data }) => {
     )
   }
 
-  const update = (data) => {
-    putRequest('users', data, token).then(
+  const update = async (data) => {
+    await putRequest('users', data, token).then(
       data => {
         console.log(data)
       },
-      reload(),
+      await reload(),
       handleCancel(),
       messageAlert('Registro actualizado satisfactoriamente', 'success')
     )
@@ -96,7 +100,25 @@ const UserForm = ({ token, reload, data }) => {
     resetField('password')
     resetField('active')
     data = []
-    console.log(data)
+  }
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    const data = {
+      password: getValues('password'),
+      id: getValues('id')
+    }
+
+    if (changePassword) {
+      try {
+        await putRequestChangePassword('users/changepassword', data, token)
+        messageAlert('Password actualizado satisfactoriamente', 'success')
+        reload()
+        handleCancel()
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   const messageAlert = (text, icon) => {
@@ -292,7 +314,7 @@ const UserForm = ({ token, reload, data }) => {
               </span>
               <input
                 type='text'
-                className='input-text'
+                className='input-text lowercase'
                 {...register('username', {
                   required: true
                 })}
@@ -307,13 +329,20 @@ const UserForm = ({ token, reload, data }) => {
                 Password
               </span>
               <input
+                ref={txtPassword}
                 type='password'
-                className='input-text'
+                className='input-text lowercase'
                 {...register('password', {
                   required: true
                 })}
               />
               {errors?.password?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
+            </div>
+          </div>
+
+          <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 self-end'>
+            <div className='flex flex-col mb-3'>
+              <button className='btn-blue-dark' onClick={handleChangePassword}>Cambiar password</button>
             </div>
           </div>
 
@@ -333,18 +362,18 @@ const UserForm = ({ token, reload, data }) => {
             </div>
           </div>
         </div>
-        <div className='flex pt-5 gap-4'>
+        <div className='flex flex-col pt-5 gap-4 w-full md:flex-row lg:w-80'>
           <button
             type='button'
-            className='btn-red-light'
+            className='btn-red-light w-full'
             onClick={handleCancel}
           >
             Cancelar
           </button>
           {
             titleForm === 'Registrar nuevo usuario'
-              ? <input type='submit' className='btn-blue-dark' value='Guardar' />
-              : <input type='submit' className='btn-blue-dark' value='Actualizar' />
+              ? <input type='submit' className='btn-blue-dark w-full' value='Guardar' />
+              : <input type='submit' className='btn-blue-dark w-full' value='Actualizar' />
             }
         </div>
       </form>
