@@ -37,14 +37,17 @@ const Reports = () => {
       // eslint-disable-next-line array-callback-return
       dataRecords.map(elem => {
         const record = {
-          Fecha: elem.date,
+          Postulante: elem.postulant.lastname + ' ' + elem.postulant.name,
+          TipoDoc: elem.postulant.typedoc,
+          NroDoc: elem.postulant.nrodoc,
+          Fecha: new Date(elem.date).toLocaleDateString(),
           Local: elem.campus,
           NroOrden: elem.order,
           TipoLic: elem.typelic,
           TipoProc: elem.typeproc,
-          HoraInicio: elem.timestart,
-          HoraFinal: elem.timeend,
-          HoraCierre: elem.timeclose
+          HoraInicio: new Date(elem.timestart).toLocaleTimeString(),
+          HoraFinal: new Date(elem.timeend).toLocaleTimeString(),
+          HoraCierre: new Date(elem.timeclose).toLocaleTimeString()
         }
         setNewRecords(newRecords => newRecords.concat(record))
       })
