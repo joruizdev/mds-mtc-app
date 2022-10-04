@@ -96,7 +96,7 @@ function Stopwatch ({
           setClassOrder('icon-start')
           start()
         })
-        .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
+        .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
     }
   }
 
@@ -119,7 +119,7 @@ function Stopwatch ({
           console.log(data)
           pause()
         })
-        .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
+        .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
     }
   }
 
@@ -152,7 +152,7 @@ function Stopwatch ({
               setNewTimeEnd(newTime)
               reset()
             })
-            .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
+            .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
         }
       })
     }
