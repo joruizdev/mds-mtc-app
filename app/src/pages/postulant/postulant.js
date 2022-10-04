@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import PostulantForm from './postulantForm'
+import Spinner from '../../components/spinner'
 
 const Postulant = () => {
+  const [pending, setPending] = useState(true)
   const [token, setToken] = useState(null)
   const [postulants, setPostulants] = useState([])
   const [reload, setReload] = useState(false)
@@ -26,8 +28,10 @@ const Postulant = () => {
   }
 
   const showPostulants = async () => {
+    setPending(true)
     const data = await getRequest('postulants')
     setPostulants(data)
+    setPending(false)
   }
 
   useEffect(() => {
@@ -94,6 +98,8 @@ const Postulant = () => {
             data={search(postulants)}
             pagination
             highlightOnHover
+            progressPending={pending}
+            progressComponent={<Spinner />}
           />
         </div>
       </div>

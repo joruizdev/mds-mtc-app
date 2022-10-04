@@ -3,6 +3,7 @@ import Stopwatch from '../components/stopwatch'
 import { postRequest } from '../services/services'
 import { useState, useEffect } from 'react'
 import imgNoFound from '../aseets/no-found.webp'
+import Spinner from '../components/spinner'
 
 const Home = () => {
   const [stopwatch, setStopwatch] = useState([])
@@ -13,6 +14,7 @@ const Home = () => {
   const [typeUser, setTypeUser] = useState('')
   const [counter, setCounter] = useState(0)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [pending, setPending] = useState(true)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedSystemAppUser')
@@ -37,8 +39,7 @@ const Home = () => {
   }
 
   const loadRecords = async () => {
-    // const date = new Date().toLocaleDateString().split('/').reverse().join('-')
-    // const dateStart = counter === 0 ? date : txtDate.current.value
+    setPending(true)
     const newDate = counter === 0 ? new Date().toLocaleDateString().split('/').reverse().join('-') : date
     if (token) {
       const data = {
@@ -51,63 +52,53 @@ const Home = () => {
         ? setStopwatch(records.filter(elem => elem.canceled === false))
         : setStopwatch(records.filter(elem => elem.canceled === false && elem.campus === campus))
       setCounter(counter + 1)
+      setPending(false)
     }
   }
 
   return (
     <>
+      <div className='flex flex-col mb-5 px-5 gap-5 lg:px-0 lg:flex-row container mx-auto'>
+        <div className='flex flex-col'>
+          <span className='text-sm font-medium text-gray-700'>
+            Fecha
+          </span>
+          <input
+            type='date'
+            className='input-text w-full lg:w-80'
+            defaultValue={new Date().toISOString().split('T')[0]}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+        <div className='flex flex-col'>
+          {
+            campusUser.toLowerCase() === 'todos'
+              ? <>
+                  <span className='text-sm font-medium text-gray-700'>Local</span>
+                  <select
+                    className='input-text lg:w-80'
+                    onChange={(e) => setCampus(e.target.value)}
+                  >
+                    <option value='Todos'>Todos</option>
+                    <option value='Surquillo'>Surquillo</option>
+                    <option value='Villa El Salvador'>Villa El Salvador</option>
+                    <option value='Huancayo'>Huancayo</option>
+                  </select>
+                </>
+              : ''
+          }
+        </div>
+      </div>
       {
-        stopwatch
-          ? (
-            <>
-              <div className='container mx-auto'>
-                <div className='flex flex-col mb-5 px-5 gap-5 lg:px-0 lg:flex-row'>
-                  <div className='flex flex-col'>
-                    <span className='text-sm font-medium text-gray-700'>
-                      Fecha
-                    </span>
-                    <input
-                      type='date'
-                      className='input-text w-full lg:w-80'
-                      defaultValue={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setDate(e.target.value)}
-                    />
-                  </div>
-                  <div className='flex flex-col'>
-                    {
-                    campusUser.toLowerCase() === 'todos'
-                      ? <><span className='text-sm font-medium text-gray-700'>Local</span><select
-                          className='input-text lg:w-80'
-                          onChange={(e) => setCampus(e.target.value)}
-                                                                                          >
-                          <option value='Todos'>Todos</option>
-                          <option value='Surquillo'>Surquillo</option>
-                          <option value='Villa El Salvador'>Villa El Salvador</option>
-                          <option value='Huancayo'>Huancayo</option>
-                                                                                          </select>
-                        </>
-                      : ''
-                    }
-                  </div>
-                </div>
-                <div className='grid grid-cols-12 gap-5'>
-                  <div className='col-span-12 px-5 md:col-span-6 md:px-5 lg:col-span-4 lg:px-0 xl:col-span-3 xl:px-0'>
-                    <></>
-                  </div>
-                </div>
-                <section className='grid grid-cols-1 gap-4  px-4 lg:grid-cols-3 xl:grid-cols-4 lg:px-0 xl:px-0'>
-                  {stopwatch.map((data) => (
-                    <Stopwatch key={data.id} {...data} typeuser={typeUser} token={token} click={loadData} />
-                  ))}
-                </section>
-              </div>
-            </>
-            )
-          : <>
-            <div className='flex h-screen'>
-              <div className='spinner m-auto' />
+        !pending
+          ? <div className='container mx-auto'>
+              <section className='grid grid-cols-1 gap-4  px-4 lg:grid-cols-3 xl:grid-cols-4 lg:px-0 xl:px-0'>
+                {stopwatch.map((data) => (
+                  <Stopwatch key={data.id} {...data} typeuser={typeUser} token={token} click={loadData} />
+                ))}
+              </section>
             </div>
-            </>
+          : <div className='flex h-screen m-auto'><Spinner /></div>
       }
       {
         stopwatch.length === 0

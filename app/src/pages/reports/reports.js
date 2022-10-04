@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ExportToExcel from '../../components/exportToExcel'
 import { postRequest } from '../../services/services'
+import Spinner from '../../components/spinner'
+
 const Reports = () => {
+  const [pending, setPending] = useState(true)
   const [token, setToken] = useState()
   const [reload, setReload] = useState()
   const [campus, setCampus] = useState()
@@ -38,6 +41,7 @@ const Reports = () => {
   }, [token, reload, dateEnd, dateStart])
 
   const showRecords = async () => {
+    setPending(true)
     if (token) {
       const data = { dateStart, dateEnd }
       const dataRecords = await postRequest('records/bydate', data, token)
@@ -45,8 +49,8 @@ const Reports = () => {
       campus.toLowerCase() === 'todos'
         ? setRecords(dataRecords)
         : setRecords(dataRecords.filter(elem => elem.campus === campus))
-
       setNewRecords([])
+      setPending(false)
       // eslint-disable-next-line array-callback-return
       dataRecords.map(elem => {
         const record = {
@@ -87,12 +91,12 @@ const Reports = () => {
       sortable: true
     },
     {
-      name: 'Tipo de documento',
+      name: 'Tipo de doc.',
       selector: row => row.postulant.typedoc,
       sortable: true
     },
     {
-      name: 'Nro. de Documento',
+      name: 'Nro. de Doc.',
       selector: row => row.postulant.nrodoc,
       sortable: true
     },
@@ -120,10 +124,24 @@ const Reports = () => {
       sortable: true
     },
     {
+      name: 'Motivo de cancelación',
+      selector: row => row.reason
+    },
+    {
       name: 'Observaciones',
       selector: row => row.observations
     }
   ]
+
+  const conditionalRowStyles = [
+    {
+      when: row => row.canceled === true,
+      style: {
+        color: 'red'
+      }
+    }
+  ]
+
   return (
     <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
       <div className='grid grid-cols-12 gap-5 py-5'>
@@ -171,6 +189,9 @@ const Reports = () => {
             data={search(records)}
             pagination
             highlightOnHover
+            progressPending={pending}
+            progressComponent={<Spinner />}
+            conditionalRowStyles={conditionalRowStyles}
           />
         </div>
       </div>

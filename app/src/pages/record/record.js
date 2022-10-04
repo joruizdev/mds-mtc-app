@@ -4,22 +4,20 @@ import DataTable from 'react-data-table-component'
 import RecordForm from './recordForm'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import Spinner from '../../components/spinner'
 
 const Record = () => {
   const [token, setToken] = useState(null)
-  // eslint-disable-next-line no-unused-vars
   const [typeUer, setTypeUer] = useState('')
   const [campus, setCampus] = useState('')
   const [records, setRecords] = useState([])
-  // eslint-disable-next-line no-unused-vars
   const [reload, setReload] = useState(false)
+  const [pending, setPending] = useState(true)
 
   const [query, setQuery] = useState('')
-  // eslint-disable-next-line no-unused-vars
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [count, setCount] = useState(0)
 
-  // eslint-disable-next-line no-unused-vars
   const search = data => {
     return data.filter(
       item => item.postulant.name.toLowerCase().includes(query) ||
@@ -86,6 +84,7 @@ const Record = () => {
   }, [token, reload, date])
 
   const showRecords = async () => {
+    setPending(true)
     setCount(count + 1)
     if (token) {
       const newDate = count === 1
@@ -101,6 +100,7 @@ const Record = () => {
       campus.toLowerCase() === 'todos'
         ? setRecords(records)
         : setRecords(records.filter(elem => elem.campus === campus))
+      setPending(false)
     }
   }
 
@@ -158,6 +158,15 @@ const Record = () => {
     }
   ]
 
+  const conditionalRowStyles = [
+    {
+      when: row => row.canceled === true,
+      style: {
+        color: 'rgb(239 68 68)'
+      }
+    }
+  ]
+
   return (
     <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
       <RecordForm token={token} records={records} campus={campus} />
@@ -184,6 +193,9 @@ const Record = () => {
             data={search(records)}
             pagination
             highlightOnHover
+            progressPending={pending}
+            progressComponent={<Spinner />}
+            conditionalRowStyles={conditionalRowStyles}
           />
         </div>
       </div>
