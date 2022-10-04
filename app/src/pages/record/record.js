@@ -33,28 +33,37 @@ const Record = () => {
 
     const MySwal = withReactContent(Swal)
     MySwal.fire({
-      text: '¿Esta seguro de cancelar el record del postulante?',
-      icon: 'warning',
+      text: `Por favor, indique el motivo por el cual quiere cancelar la atención del postulante ${row.postulant.lastname + ' ' + row.postulant.name}`,
+      input: 'text',
+      icon: 'info',
       showCancelButton: true,
+      confirmButtonText: 'Si, cancelar atención',
       confirmButtonColor: '#2c70b6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, quiero cancelar'
-    }).then(result => {
+      cancelButtonText: 'Regresar',
+      preConfirm: (reason) => {
+        if (reason.length > 0) {
+          return reason
+        } else {
+          Swal.showValidationMessage(
+            'Por favor indique el motivo'
+          )
+        }
+      }
+    }).then(async (result) => {
       if (result.isConfirmed) {
         const data = {
           id: row.id,
+          reason: result.value,
           canceled: true
         }
-        putRequest('records', data, token)
+        await putRequest('records', data, token)
           .then(response => {
-            console.log(response)
             setReload(true)
           })
-
         Swal.fire({
-          text: 'El record fue candelado satisfactoriamente',
-          icon: 'success',
           position: 'top-end',
+          icon: 'success',
+          text: 'Se canceló la atención satisfactoriamente',
           showConfirmButton: false,
           timer: 1500
         })

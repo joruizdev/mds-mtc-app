@@ -9,6 +9,7 @@ const Home = () => {
   const [reload, setReload] = useState(true)
   const [token, setToken] = useState(null)
   const [campus, setCampus] = useState('')
+  const [campusUser, setCampusUser] = useState('')
   const [typeUser, setTypeUser] = useState('')
   const [counter, setCounter] = useState(0)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -20,6 +21,7 @@ const Home = () => {
       const user = JSON.parse(loggedUserJSON)
       setToken(user.token)
       setCampus(user.campus)
+      setCampusUser(user.campus)
       setTypeUser(user.typeuser)
     }
   }, [token])
@@ -28,7 +30,7 @@ const Home = () => {
     setReload(false)
     loadRecords()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reload, date])
+  }, [reload, date, campus])
 
   const loadData = () => {
     setReload(true)
@@ -52,10 +54,6 @@ const Home = () => {
     }
   }
 
-  /* const handleSeacrh = async () => {
-    loadRecords()
-  } */
-
   return (
     <>
       {
@@ -63,16 +61,34 @@ const Home = () => {
           ? (
             <>
               <div className='container mx-auto'>
-                <div className='flex flex-col mb-5 px-5 lg:w-80 lg:px-0'>
-                  <span className='text-sm font-medium text-gray-700'>
-                    Fecha
-                  </span>
-                  <input
-                    type='date'
-                    className='input-text w-full'
-                    defaultValue={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
+                <div className='flex flex-col mb-5 px-5 gap-5 lg:px-0 lg:flex-row'>
+                  <div className='flex flex-col'>
+                    <span className='text-sm font-medium text-gray-700'>
+                      Fecha
+                    </span>
+                    <input
+                      type='date'
+                      className='input-text w-full lg:w-80'
+                      defaultValue={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
+                  <div className='flex flex-col'>
+                    {
+                    campusUser.toLowerCase() === 'todos'
+                      ? <><span className='text-sm font-medium text-gray-700'>Local</span><select
+                          className='input-text lg:w-80'
+                          onChange={(e) => setCampus(e.target.value)}
+                                                                                          >
+                          <option value='Todos'>Todos</option>
+                          <option value='Surquillo'>Surquillo</option>
+                          <option value='Villa El Salvador'>Villa El Salvador</option>
+                          <option value='Huancayo'>Huancayo</option>
+                                                                                          </select>
+                        </>
+                      : ''
+                    }
+                  </div>
                 </div>
                 <div className='grid grid-cols-12 gap-5'>
                   <div className='col-span-12 px-5 md:col-span-6 md:px-5 lg:col-span-4 lg:px-0 xl:col-span-3 xl:px-0'>

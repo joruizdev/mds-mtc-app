@@ -10,6 +10,19 @@ const Reports = () => {
   const [dateStart, setDateStart] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [newRecords, setNewRecords] = useState([])
+  const [query, setQuery] = useState('')
+
+  // eslint-disable-next-line no-unused-vars
+  const search = data => {
+    return data.filter(
+      item => item.postulant.name.toLowerCase().includes(query) ||
+      item.postulant.lastname.toLowerCase().includes(query) ||
+      item.postulant.nrodoc.toLowerCase().includes(query) ||
+      item.campus.toLowerCase().includes(query) ||
+      item.typelic.toLowerCase().includes(query) ||
+      item.typeproc.toLowerCase().includes(query)
+    )
+  }
 
   useEffect(() => {
     setReload(false)
@@ -47,7 +60,8 @@ const Reports = () => {
           TipoProc: elem.typeproc,
           HoraInicio: new Date(elem.timestart).toLocaleTimeString(),
           HoraFinal: new Date(elem.timeend).toLocaleTimeString(),
-          HoraCierre: new Date(elem.timeclose).toLocaleTimeString()
+          HoraCierre: new Date(elem.timeclose).toLocaleTimeString(),
+          Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : 'Iniciado'
         }
         setNewRecords(newRecords => newRecords.concat(record))
       })
@@ -140,15 +154,21 @@ const Reports = () => {
           </div>
         </div>
       </div>
-      <div className='relative py-10'>
-        <div className='flex absolute right-0 z-10'>
+      <div className='relative col-span-12'>
+        <div className='flex flex-col gap-5 absolute z-10 w-full md:flex-row lg:w-96 lg:right-0'>
+          <input
+            type='text'
+            className='input-text w-full'
+            placeholder='Buscar'
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <ExportToExcel data={newRecords} fileName='Lista de records' />
         </div>
-        <div>
+        <div className='py-28 md:py-14 lg:py-0'>
           <DataTable
             title='Lista de records'
             columns={columns}
-            data={records}
+            data={search(records)}
             pagination
             highlightOnHover
           />

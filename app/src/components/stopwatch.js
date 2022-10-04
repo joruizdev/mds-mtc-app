@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content'
 import iconAlarm from '../aseets/icon-alarm.gif'
 
 function Stopwatch ({
-  id, postulant, typelic, date, timestart, timeend, timeclose, initiated, closed, canceled, order, click, typeuser, token
+  id, postulant, typelic, date, timestart, timeend, timeclose, initiated, closed, canceled, order, click, typeuser, token, campus
 }) {
   const data = {
     id,
@@ -20,7 +20,8 @@ function Stopwatch ({
     initiated,
     closed,
     canceled,
-    order
+    order,
+    campus
   }
 
   const {
@@ -95,6 +96,7 @@ function Stopwatch ({
           setClassOrder('icon-start')
           start()
         })
+        .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
     }
   }
 
@@ -112,10 +114,12 @@ function Stopwatch ({
         timeclose: new Date(date).toISOString(),
         closed: true
       }
-      await putRequest('records', newdata, token).then(data => {
-        console.log(data)
-        pause()
-      })
+      await putRequest('records', newdata, token)
+        .then(data => {
+          console.log(data)
+          pause()
+        })
+        .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
     }
   }
 
@@ -129,7 +133,7 @@ function Stopwatch ({
         confirmButtonColor: '#2c70b6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, quiero reiniciar'
-      }).then(result => {
+      }).then(async result => {
         if (result.isConfirmed) {
           const secondTime = new Date().getTime()
           const addTime = 180 * 60000
@@ -141,16 +145,28 @@ function Stopwatch ({
             timeend: newTime.toISOString(),
             initiated: true
           }
-          putRequest('records', newData, token)
+          await putRequest('records', newData, token)
             .then(data => {
               setNewTimeStart(new Date())
               setNewInitiated(true)
               setNewTimeEnd(newTime)
               reset()
             })
+            .catch(messageAlert('Ocurrió un error, por favor actualiza e intentelo nuevamente', 'error'))
         }
       })
     }
+  }
+
+  const messageAlert = (text, icon) => {
+    const MySwal = withReactContent(Swal)
+    MySwal.fire({
+      text,
+      position: 'top-end',
+      icon,
+      showConfirmButton: false,
+      timer: 1500
+    })
   }
 
   return (
@@ -171,6 +187,11 @@ function Stopwatch ({
           <p>Tipo de licencia:
             <strong>
               {' ' + typelic}
+            </strong>
+          </p>
+          <p>Local:
+            <strong>
+              {' ' + campus}
             </strong>
           </p>
         </div>

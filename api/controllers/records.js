@@ -56,6 +56,7 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     canceled = 0,
     order = 0,
     observations,
+    reason,
     postulantId
   } = body
 
@@ -77,6 +78,7 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     canceled,
     order,
     observations,
+    reason,
     postulant: postulantId,
     user: userId
   })
@@ -112,7 +114,8 @@ recordRouter.put('/:id', userExtractor, (req, response, next) => {
     initiated: record.initiated,
     closed: record.closed,
     canceled: record.canceled,
-    observations: record.observations
+    observations: record.observations,
+    reason: record.reason
   }
 
   Record.findByIdAndUpdate(id, newRecordInfo, { new: true })
