@@ -204,8 +204,7 @@ const UserForm = ({ token, reload, data }) => {
                 type='text'
                 className='input-text'
                 {...register('nrodoc', {
-                  required: true,
-                  valueAsNumber: true
+                  required: true
                 })}
               />
               {errors?.nrodoc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
