@@ -26,6 +26,8 @@ const recordSchema = new Schema({
   order: Number,
   observations: String,
   reason: String,
+  invoiced: Boolean,
+  paid: Boolean,
   postulant: {
     type: Schema.Types.ObjectId,
     ref: 'Postulant'

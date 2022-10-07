@@ -8,7 +8,6 @@ import calendar from '../aseets/calendar.svg'
 import clock from '../aseets/clock.svg'
 import company from '../aseets/company.svg'
 import getOut from '../aseets/get-off-bus.svg'
-import ImgMenu from '../aseets/menu.png'
 
 const Header = () => {
   const [username, setUsername] = useState()
@@ -47,8 +46,8 @@ const Header = () => {
           <div className='w-28'>
             <img src={logo} alt='logo' />
           </div>
-          <div ref={menu} className='hidden lg:block xl:block'>
-            <Nav typeuser={typeUser} />
+          <div ref={menu} className='hidden lg:block'>
+            <Nav typeuser={typeUser} click={showMenu} />
           </div>
         </div>
 
@@ -77,8 +76,9 @@ const Header = () => {
           </div>
         </div>
 
-        <button onClick={showMenu} className='flex flex-col gap-1 pt-2 items-start text-xl align-top lg:hidden xl:hidden'>
-          <img src={ImgMenu} alt='Menu' />
+        <button onClick={showMenu} className='flex flex-col gap-1 pt-5 items-start text-xl align-top lg:hidden xl:hidden'>
+          <span className='w-10 h-1 bg-mds-blue rounded-xl' />
+          <span className='w-10 h-1 bg-mds-blue rounded-xl' />
         </button>
 
       </header>

@@ -1,17 +1,40 @@
-import { Link } from 'react-router-dom'
+import { useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-const Nav = ({ typeuser }) => {
+const Nav = ({ typeuser, click }) => {
+  const navigate = useNavigate()
+  const menu = useRef()
+
+  const handleLogout = () => {
+    console.log('cerrar session')
+    window.localStorage.removeItem('loggedSystemAppUser')
+    navigate('/')
+    window.location.reload()
+  }
+
+  const showMenu = () => {
+    click()
+  }
+
   return (
-    <nav>
-      <ul className='font-medium flex flex-col gap-2 lg:flex lg:flex-row lg:gap-4'>
-        <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/'>Inicio</Link></li>
-        <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/postulant'>Postulante</Link></li>
-        <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/record'>Record</Link></li>
-        <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/reports'>Reportes</Link></li>
+    <nav ref={menu} className='font-medium flex flex-col fixed top-0 left-0 bg-white  text-mds-blue w-full h-screen z-40 space-y-14 overflow-hidden lg:bg-transparent lg:flex-row lg:relative lg:h-auto lg:space-y-0 lg:text-stone-900'>
+      <div className='flex justify-end py-10 px-14 relative lg:hidden'>
+        <button onClick={showMenu}>
+          <span className='w-8 h-1 bg-mds-blue rounded-xl absolute -rotate-45' />
+          <span className='w-8 h-1 bg-mds-blue rounded-xl absolute rotate-45' />
+        </button>
+      </div>
+      <div className='flex flex-col lg:flex-row gap-2 lg:gap-5'>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/'>Inicio</Link></div>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/postulant'>Postulante</Link></div>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/record'>Record</Link></div>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/reports'>Reportes</Link></div>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/voucher'>Facturación</Link></div>
         {
-          typeuser.toLowerCase() === 'soporte' && <li className='text-md hover:text-mds-blue cursor-pointer'><Link to='/user'>Usuario</Link></li>
+          typeuser.toLowerCase() === 'soporte' && <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/user'>Usuario</Link></div>
         }
-      </ul>
+        <div className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:hidden'><button onClick={handleLogout}>Cerrar sesión</button></div>
+      </div>
     </nav>
   )
 }

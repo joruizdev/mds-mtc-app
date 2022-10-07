@@ -79,6 +79,8 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     order,
     observations,
     reason,
+    invoiced: false,
+    paid: false,
     postulant: postulantId,
     user: userId
   })
@@ -115,7 +117,9 @@ recordRouter.put('/:id', userExtractor, (req, response, next) => {
     closed: record.closed,
     canceled: record.canceled,
     observations: record.observations,
-    reason: record.reason
+    reason: record.reason,
+    invoiced: record.invoiced,
+    paid: record.paid
   }
 
   Record.findByIdAndUpdate(id, newRecordInfo, { new: true })
