@@ -147,11 +147,11 @@ const CreateVoucherForm = ({ rows }) => {
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
             <div className='flex flex-col'>
               <div className='flex gap-10'>
-                <div className='flex gap-2'>
+                <div className='flex gap-2 text-sm font-medium text-gray-700'>
                   <input ref={rdbDNI} type='radio' id='rdbDNI' name='rdbVoucher' onChange={handleChangeTextRadioDNI} defaultChecked />
                   <label htmlFor='rdbDNI'>DNI</label>
                 </div>
-                <div className='flex gap-2'>
+                <div className='flex gap-2 text-sm font-medium text-gray-700'>
                   <input type='radio' id='rdbRUC' name='rdbVoucher' onChange={handleChangeTextRadioRUC} />
                   <label htmlFor='rdbRUC'>RUC</label>
                 </div>
@@ -168,11 +168,11 @@ const CreateVoucherForm = ({ rows }) => {
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-3 md:order-3'>
             <div className='flex flex-col'>
-              <span>Cliente</span>
+              <span className='text-sm font-medium text-gray-700'>Cliente</span>
               <input type='email' className='input-text' readOnly value={client[0].client} />
             </div>
           </div>
-          <div className='col-span-12 order-first md:col-span-6 lg:col-span-3 md:order-2 lg:order-3 xl:order-4 md:row-span-2'>
+          <div className='col-span-12 order-first md:col-span-6 lg:col-span-3 md:order-2 lg:order-3 xl:order-4 md:row-span-2 '>
             <div className='flex flex-col items-center justify-center border border-mds-yellow rounded-md p-4 h-full'>
               <p className='text-xl'>RUC: 20491987368</p>
               <p className='text-2xl'>{typeVoucher}</p>
@@ -181,37 +181,37 @@ const CreateVoucherForm = ({ rows }) => {
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-4 lg:order-3'>
             <div className='flex flex-col'>
-              <span>Dirección</span>
+              <span className='text-sm font-medium text-gray-700'>Dirección</span>
               <input type='text' className='input-text' readOnly value={client[0].adress} />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-4'>
             <div className='flex flex-col'>
-              <span>Cuidad</span>
+              <span className='text-sm font-medium text-gray-700'>Cuidad</span>
               <input type='text' className='input-text' readOnly value={client[0].city} />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-5'>
             <div className='flex flex-col'>
-              <span>Email</span>
+              <span className='text-sm font-medium text-gray-700'>Email</span>
               <input type='email' className='input-text' />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-6'>
             <div className='flex flex-col'>
-              <span>Fecha emisión</span>
+              <span className='text-sm font-medium text-gray-700'>Fecha emisión</span>
               <input type='date' className='input-text' defaultValue={new Date().toISOString().split('T')[0]} />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-7'>
             <div className='flex flex-col'>
-              <span>Fecha vencimiento</span>
+              <span className='text-sm font-medium text-gray-700'>Fecha vencimiento</span>
               <input type='date' className='input-text' defaultValue={new Date().toISOString().split('T')[0]} />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-8'>
             <div className='flex flex-col'>
-              <span>Moneda</span>
+              <span className='text-sm font-medium text-gray-700'>Moneda</span>
               <select className='input-text pt-2'>
                 <option>Soles</option>
                 <option>Dólares</option>
@@ -220,19 +220,19 @@ const CreateVoucherForm = ({ rows }) => {
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-9'>
             <div className='flex flex-col'>
-              <span>Condición de pago</span>
+              <span className='text-sm font-medium text-gray-700'>Condición de pago</span>
               <input type='text' className='input-text' />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-10'>
             <div className='flex flex-col'>
-              <span>Orden de compra</span>
+              <span className='text-sm font-medium text-gray-700'>Orden de compra</span>
               <input type='text' className='input-text' />
             </div>
           </div>
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 md:order-11'>
             <div className='flex flex-col'>
-              <span>Guía de remisión</span>
+              <span className='text-sm font-medium text-gray-700'>Guía de remisión</span>
               <input type='text' className='input-text' />
             </div>
           </div>
@@ -246,7 +246,7 @@ const CreateVoucherForm = ({ rows }) => {
           />
         </div>
         <div className='flex flex-col py-4'>
-          <span>Observaciones</span>
+          <span className='text-sm font-medium text-gray-700'>Observaciones</span>
           <input type='text' className='input-text' />
         </div>
         <div className='flex flex-col justify-between py-4 lg:flex-row'>

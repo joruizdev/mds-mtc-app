@@ -57,6 +57,7 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     order = 0,
     observations,
     reason,
+    price,
     postulantId
   } = body
 
@@ -79,6 +80,7 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     order,
     observations,
     reason,
+    price,
     invoiced: false,
     paid: false,
     postulant: postulantId,
@@ -118,6 +120,7 @@ recordRouter.put('/:id', userExtractor, (req, response, next) => {
     canceled: record.canceled,
     observations: record.observations,
     reason: record.reason,
+    price: record.price,
     invoiced: record.invoiced,
     paid: record.paid
   }

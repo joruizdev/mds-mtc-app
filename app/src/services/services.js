@@ -1,6 +1,5 @@
 export const getRequest = async url => {
   try {
-    // const response = await fetch(`${process.env.REACT_APP_URL_API}${url}`)
     const response = await fetch(`${url}`)
     const data = await response.json()
     return data
@@ -12,7 +11,6 @@ export const getRequest = async url => {
 export const getRequestById = async (url, id) => {
   try {
     const response = await fetch(`${url}/${id}`)
-    // const response = await fetch(`${process.env.REACT_APP_URL_API}${url}/${id}`)
     const data = await response.json()
     return data
   } catch (e) {
@@ -30,7 +28,6 @@ export const postRequestLogin = async (url, requestData) => {
     body: JSON.stringify(requestData)
   }
   try {
-    // const response = await fetch(`${process.env.REACT_APP_URL_API}${url}`, settings)
     const response = await fetch(`${url}`, settings)
     const data = await response.json()
     return data
@@ -50,7 +47,6 @@ export const postRequest = async (url, requestData, token) => {
     body: JSON.stringify(requestData)
   }
   try {
-    // const response = await fetch(`${process.env.REACT_APP_URL_API}${url}`, settings)
     const response = await fetch(`${url}`, settings)
     const data = await response.json()
     return data
@@ -75,7 +71,6 @@ export const putRequest = async (url, requestData, token) => {
     const data = await response.json()
     return data
   } catch (e) {
-    console.log(e)
     return e
   }
 }

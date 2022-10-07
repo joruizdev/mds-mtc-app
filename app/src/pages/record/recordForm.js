@@ -49,6 +49,8 @@ const RecordForm = ({ token, records, campus }) => {
     resetField('name')
     resetField('typelic')
     resetField('typeproc')
+    resetField('observations')
+    resetField('price')
   }
 
   const searchPostulant = async () => {
@@ -179,6 +181,24 @@ const RecordForm = ({ token, records, campus }) => {
               />
             </div>
           </div>
+        </div>
+        <div className='flex justify-end items-end text-end py-4'>
+          <div className='flex flex-col mb-3'>
+            <span className='text-sm font-medium text-gray-700'>
+              Precio del examen
+            </span>
+            <div className='flex items-center gap-5'>
+              S/.
+              <input
+                type='text'
+                className='input-text text-end'
+                {...register('price', {
+                  required: true
+                })}
+              />
+            </div>
+          </div>
+          {errors?.typeproc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
         </div>
         <div className='flex flex-col pt-5 gap-4 w-full md:flex-row lg:w-80'>
           <button

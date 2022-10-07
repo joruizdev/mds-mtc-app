@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest } from '../../services/services'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { messageAlert } from '../../notifications/notifications'
 
 const PostulantForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo postulante')
@@ -30,6 +27,7 @@ const PostulantForm = ({ token, reload, data }) => {
       showEditPostulant()
     }
     setFirstLoad(true)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   const showEditPostulant = () => {
@@ -53,25 +51,28 @@ const PostulantForm = ({ token, reload, data }) => {
     const result = await postRequest('postulants/bynrodoc', data, token)
     if (result.length > 0) return messageAlert('Ya existe un postulante con el nro de documento ingresado', 'error')
 
-    await postRequest('postulants', data, token).then(
-      data => {
-        console.log(data)
-        reload()
-        handleCancel()
-      },
+    try {
+      const response = await postRequest('postulants', data, token)
+      console.log(response)
       messageAlert('Registro guardado satisfactoriamente', 'success')
-    )
+      reload()
+      handleCancel()
+    } catch (error) {
+      messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
+    }
   }
 
-  const update = (data) => {
-    putRequest('postulants', data, token).then(
-      data => {
-        console.log(data)
-      },
-      reload(),
-      handleCancel(),
+  const update = async (data) => {
+    try {
+      const response = await putRequest('postulants', token)
+      console.log(response)
+      reload()
+      handleCancel()
       messageAlert('Registro actualizado satisfactoriamente', 'success')
-    )
+    } catch (error) {
+      console.log(error)
+      messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
+    }
   }
 
   const handleCancel = () => {
@@ -87,19 +88,8 @@ const PostulantForm = ({ token, reload, data }) => {
     resetField('adress')
     resetField('dateofbirth')
     data = []
-    console.log(data)
   }
 
-  const messageAlert = (text, icon) => {
-    const MySwal = withReactContent(Swal)
-    MySwal.fire({
-      text,
-      position: 'top-end',
-      icon,
-      showConfirmButton: false,
-      timer: 1500
-    })
-  }
   return (
     <div>
       <div>
