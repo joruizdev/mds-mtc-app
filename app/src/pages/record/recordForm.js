@@ -1,9 +1,8 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { postRequest } from '../../services/services'
+import { messageAlert } from '../../notifications/notifications'
 
 const RecordForm = ({ token, records, campus }) => {
   const {
@@ -20,28 +19,36 @@ const RecordForm = ({ token, records, campus }) => {
   })
 
   const [messageNoFound, setMessageNoFound] = useState('')
+  const [textButtonSearch, setTextButtonSearch] = useState('Buscar')
+  const [textButtonSave, setTextButtonSave] = useState('Guardar')
   const navigate = useNavigate()
   const txtNroDoc = useRef()
 
   const onSubmit = async data => {
+    setTextButtonSave('Verificando...')
     const nroDoc = txtNroDoc.current.value
     const result = await records.filter(record => record.postulant.nrodoc === nroDoc.trim() && record.canceled === false)
     if (result.length > 0) {
+      setTextButtonSave('Buscar')
       return messageAlert('Ya existe un record del postulante con fecha de hoy', 'error')
     }
 
     data.postulantId = data.id
     data.campus = campus
     data.order = records.length + 1
-
+    setTextButtonSave('Guardando...')
     await postRequest('records', data, token)
-      .then(
-        data => {
-          console.log(data)
-        },
-        messageAlert('Record registrado satisfactoriamente', 'success'),
-        navigate('/'),
-        navigate(0))
+      .then(response => {
+        console.log(response)
+        messageAlert('Record registrado satisfactoriamente', 'success')
+        navigate('/')
+        navigate(0)
+      })
+      .catch(e => {
+        console.log(e)
+        messageAlert('Record registrado satisfactoriamente', 'success')
+      })
+    await setTextButtonSave('Buscar')
   }
 
   const handleCancel = () => {
@@ -54,6 +61,7 @@ const RecordForm = ({ token, records, campus }) => {
   }
 
   const searchPostulant = async () => {
+    setTextButtonSearch('Buscando...')
     const nroDoc = txtNroDoc.current.value
     const data = { nrodoc: nroDoc.trim() }
     const postulant = await postRequest('postulants/bynrodoc', data, token)
@@ -66,17 +74,7 @@ const RecordForm = ({ token, records, campus }) => {
       setMessageNoFound('No se encontraron registros')
       handleCancel()
     }
-  }
-
-  const messageAlert = (text, icon) => {
-    const MySwal = withReactContent(Swal)
-    MySwal.fire({
-      text,
-      position: 'top-end',
-      icon,
-      showConfirmButton: false,
-      timer: 1500
-    })
+    await setTextButtonSearch('Buscar')
   }
 
   return (
@@ -100,7 +98,7 @@ const RecordForm = ({ token, records, campus }) => {
                   placeholder='Nro. documento'
                   ref={txtNroDoc}
                 />
-                <input type='button' className='mt-1 rounded-l-none btn-blue-dark cursor-pointer' value='Buscar' onClick={searchPostulant} />
+                <input type='button' className='mt-1 rounded-l-none btn-blue-dark cursor-pointer' value={textButtonSearch} onClick={searchPostulant} />
               </div>
             </div>
             <p className='text-red-500 text-sm'>{messageNoFound}</p>
@@ -187,7 +185,7 @@ const RecordForm = ({ token, records, campus }) => {
             <span className='text-sm font-medium text-gray-700'>
               Precio del examen
             </span>
-            <div className='flex items-center gap-5'>
+            <div className='flex items-center gap-5 mb-3'>
               S/.
               <input
                 type='text'
@@ -197,8 +195,8 @@ const RecordForm = ({ token, records, campus }) => {
                 })}
               />
             </div>
+            {errors?.price?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
           </div>
-          {errors?.typeproc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
         </div>
         <div className='flex flex-col pt-5 gap-4 w-full md:flex-row lg:w-80'>
           <button
@@ -208,7 +206,7 @@ const RecordForm = ({ token, records, campus }) => {
           >
             Cancelar
           </button>
-          <input type='submit' className='btn-blue-dark w-full' value='Guardar' />
+          <input type='submit' className='btn-blue-dark w-full' value={textButtonSave} />
         </div>
       </form>
     </div>

@@ -1,7 +1,16 @@
+const ERROR_HANDLERS = {
+  CastError: res => res.status(400).send({ error: 'id used is malformed' }),
+
+  ValidationError: (res, { message }) => res.status(409).send({ error: message }),
+
+  JsonWebTokenError: res => res.status(401).send({ error: 'token missing or invalid' }),
+
+  TokenExpirerError: res => res.status(401).send({ error: 'token expired' }),
+
+  defaultError: res => res.status(500).end()
+}
+
 module.exports = (error, req, res, next) => {
-  error.name === 'CastError' && res.status(400).send({ error: 'id used is malformed' })
-  error.name === 'ValidationError' && res.status(409).send({ error: error.message })
-  error.name === 'JsonWebTokenError' && res.status(401).send({ error: 'token missing or invalid' })
-  error.name === 'TokenExpirerError' && res.status(401).send({ error: 'token missing or invalid' })
-  res.status(500).end()
+  const handler = ERROR_HANDLERS[error.name] || ERROR_HANDLERS.defaultError
+  handler(res, error)
 }

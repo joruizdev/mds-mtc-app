@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import UserForm from './userForm'
 import Spinner from '../../components/spinner'
+import { messageAlert } from '../../notifications/notifications'
 
 const User = () => {
   const [token, setToken] = useState(null)
@@ -29,9 +30,15 @@ const User = () => {
 
   const showUsers = async () => {
     setPending(true)
-    const data = await getRequest('users')
-    setUsers(data)
-    setPending(false)
+    await getRequest('users')
+      .then(response => {
+        setUsers(response)
+        setPending(false)
+      })
+      .catch(e => {
+        console.log(e)
+        messageAlert('Ocurrio un error, por favor intente nuevamente en unos minutos', 'error')
+      })
   }
 
   useEffect(() => {

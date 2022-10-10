@@ -12,29 +12,29 @@ loginRouter.post('/', async (req, res) => {
     ? false
     : await bcrypt.compare(password, user.passwordHash)
 
-  if (!user || !passwordCorrect) {
-    return (
-      res.status(401).json({
-        error: 'invalid user or password'
-      })
-    )
+  if (!(user && passwordCorrect)) {
+    return res.status(401).json({
+      error: 'invalid username or password'
+    })
   }
 
   const userForToken = {
-    id: user._id,
-    username: user.username
+    username: user.username,
+    id: user._id
   }
 
   const token = jwt.sign(userForToken, process.env.SECRET)
 
-  res.send({
-    name: user.name,
-    lastname: user.lastname,
-    username: user.username,
-    campus: user.campus,
-    typeuser: user.typeuser,
-    token
-  })
+  res
+    .status(200)
+    .send({
+      name: user.name,
+      lastname: user.lastname,
+      username: user.username,
+      campus: user.campus,
+      typeuser: user.typeuser,
+      token
+    })
 })
 
 module.exports = loginRouter

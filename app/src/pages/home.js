@@ -4,6 +4,7 @@ import { postRequest } from '../services/services'
 import { useState, useEffect } from 'react'
 import imgNoFound from '../aseets/no-found.webp'
 import Spinner from '../components/spinner'
+import { messageAlert } from '../notifications/notifications'
 
 const Home = () => {
   const [stopwatch, setStopwatch] = useState([])
@@ -46,13 +47,18 @@ const Home = () => {
         dateStart: newDate,
         dateEnd: newDate
       }
-
-      const records = await postRequest('records/bydate', data, token)
-      campus.toLowerCase() === 'todos'
-        ? setStopwatch(records.filter(elem => elem.canceled === false))
-        : setStopwatch(records.filter(elem => elem.canceled === false && elem.campus === campus))
-      setCounter(counter + 1)
-      setPending(false)
+      await postRequest('records/bydate', data, token)
+        .then(records => {
+          campus.toLowerCase() === 'todos'
+            ? setStopwatch(records.filter(elem => elem.canceled === false))
+            : setStopwatch(records.filter(elem => elem.canceled === false && elem.campus === campus))
+          setCounter(counter + 1)
+          setPending(false)
+        })
+        .catch((e) => {
+          messageAlert('Ocurrió un error, intentelo nuevamente en unos minutos', 'error')
+          console.error(e)
+        })
     }
   }
 

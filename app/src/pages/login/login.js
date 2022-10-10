@@ -1,39 +1,44 @@
-/* eslint-disable no-unused-vars */
 import { useState } from 'react'
-import { postRequestLogin } from '../../services/services'
 import imgLogo from '../../aseets/logo.png'
 import { useForm } from 'react-hook-form'
+import loginService from '../../services/login'
 
 const Login = ({ click }) => {
   const {
     register,
     handleSubmit,
     resetField,
-    setValue,
     formState: { errors }
   } = useForm()
 
   const [errorMessage, setErrorMessage] = useState()
+  // eslint-disable-next-line no-unused-vars
   const [user, setUser] = useState(null)
+  const [textButtonInitSesion, setTextButtonInitSesion] = useState('Iniciar sesión')
 
   const onSubmit = async (data) => {
-    const user = await postRequestLogin('login',
-      {
-        username: data.username,
-        password: data.password
-      })
-
-    if (user.error) {
-      setErrorMessage(user.error)
-    } else {
-      setUser(user)
+    try {
+      setTextButtonInitSesion('Iniciando...')
+      const user = await loginService('login',
+        {
+          username: data.username,
+          password: data.password
+        })
 
       window.localStorage.setItem(
         'loggedSystemAppUser', JSON.stringify(user)
       )
+
+      setUser(user)
       resetField('username')
       resetField('password')
       click()
+    } catch (error) {
+      setTextButtonInitSesion('Iniciar sesión')
+      setErrorMessage('Wrong credentials')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
     }
   }
 
@@ -66,13 +71,13 @@ const Login = ({ click }) => {
                 })}
               />
               {errors?.password?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
-              {errorMessage ? <p className='text-red-500 text-sm pt-2'>Usuario o password invalido</p> : ''}
+              <p className='text-red-500 text-sm pt-2'>{errorMessage}</p>
             </div>
             <button
               type='submit'
               className='px-5 py-2 bg-mds-blue text-white rounded-md hover:bg-mds-blue-dark text-lg w-full'
             >
-              Iniciar sesión
+              {textButtonInitSesion}
             </button>
           </div>
         </div>

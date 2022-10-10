@@ -10,6 +10,6 @@ mongoose.connect(connectionString)
   })
 
 process.on('uncaughtException', error => {
-  console.log(error)
+  console.error(error)
   mongoose.disconnect()
 })

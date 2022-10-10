@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import PostulantForm from './postulantForm'
 import Spinner from '../../components/spinner'
+import { messageAlert } from '../../notifications/notifications'
 
 const Postulant = () => {
   const [pending, setPending] = useState(true)
@@ -29,9 +30,15 @@ const Postulant = () => {
 
   const showPostulants = async () => {
     setPending(true)
-    const data = await getRequest('postulants')
-    setPostulants(data)
-    setPending(false)
+    await getRequest('postulants')
+      .then(response => {
+        setPostulants(response)
+        setPending(false)
+      })
+      .catch(e => {
+        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+        console.log(e)
+      })
   }
 
   useEffect(() => {

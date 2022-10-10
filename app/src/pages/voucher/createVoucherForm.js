@@ -175,7 +175,7 @@ const CreateVoucherForm = ({ rows }) => {
           <div className='col-span-12 order-first md:col-span-6 lg:col-span-3 md:order-2 lg:order-3 xl:order-4 md:row-span-2 '>
             <div className='flex flex-col items-center justify-center border border-mds-yellow rounded-md p-4 h-full'>
               <p className='text-xl'>RUC: 20491987368</p>
-              <p className='text-2xl'>{typeVoucher}</p>
+              <p className='text-xl'>{typeVoucher}</p>
               <p className='text-xl'>#{serieVoucher + '-' + nroVoucher}</p>
             </div>
           </div>

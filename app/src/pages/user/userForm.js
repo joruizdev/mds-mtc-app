@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest, putRequestChangePassword } from '../../services/services'
@@ -10,6 +8,9 @@ const UserForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo usuario')
   const [firstLoad, setFirstLoad] = useState(false)
   const [changePassword, setChangePassword] = useState(false)
+  const [textButtonSave, setTextButtonSave] = useState('Guardar')
+  const [textButtonChangePassword, setTextButtonChangePassword] = useState('Cambiar password')
+  const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
   const txtPassword = useRef()
 
   const {
@@ -33,6 +34,7 @@ const UserForm = ({ token, reload, data }) => {
       showEditUser()
     }
     setFirstLoad(true)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   const showEditUser = () => {
@@ -59,29 +61,38 @@ const UserForm = ({ token, reload, data }) => {
   }
 
   const save = async (data) => {
+    setTextButtonSave('Verificando...')
     const newData = { ...data, records: [], postulants: [] }
     const result = await postRequest('users/bynrodoc', newData, token)
     if (result.length > 0) return messageAlert('Ya existe un usuario con el nro de documento ingresado', 'error')
-
-    await postRequest('users', data, token).then(
-      data => {
+    setTextButtonSave('Guardando...')
+    await postRequest('users', data, token)
+      .then(data => {
         console.log(data)
         reload()
         handleCancel()
-      },
-      messageAlert('Registro guardado satisfactoriamente', 'success')
-    )
+        messageAlert('Registro guardado satisfactoriamente', 'success')
+      })
+      .catch(e => {
+        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+        console.error(e)
+      })
+    setTextButtonSave('Guardar')
   }
 
   const update = async (data) => {
-    await putRequest('users', data, token).then(
-      data => {
-        console.log(data)
-      },
-      await reload(),
-      handleCancel(),
-      messageAlert('Registro actualizado satisfactoriamente', 'success')
-    )
+    setTextButtonUpdate('Actualizando')
+    await putRequest('users', data, token)
+      .then(response => {
+        messageAlert('Registro actualizado satisfactoriamente', 'success')
+        handleCancel()
+        reload()
+      })
+      .catch(error => {
+        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos munutos', 'error')
+        console.error(error)
+      })
+    setTextButtonUpdate('Actualizar')
   }
 
   const handleCancel = () => {
@@ -104,20 +115,23 @@ const UserForm = ({ token, reload, data }) => {
 
   const handleChangePassword = async (e) => {
     e.preventDefault()
+    setTextButtonChangePassword('Cambiando password')
     const data = {
       password: getValues('password'),
       id: getValues('id')
     }
 
     if (changePassword) {
-      try {
-        await putRequestChangePassword('users/changepassword', data, token)
-        messageAlert('Password actualizado satisfactoriamente', 'success')
-        reload()
-        handleCancel()
-      } catch (error) {
-        console.log(error)
-      }
+      await putRequestChangePassword('users/changepassword', data, token)
+        .then(response => {
+          messageAlert('Password actualizado satisfactoriamente', 'success')
+          reload()
+          handleCancel()
+        })
+        .catch(error => {
+          messageAlert('Ocurrió un error por favor intentelo nuevamente en unos minutos', 'error')
+          console.log(error)
+        })
     }
   }
 
@@ -341,7 +355,7 @@ const UserForm = ({ token, reload, data }) => {
 
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 self-end'>
             <div className='flex flex-col mb-3'>
-              <button className='btn-blue-dark' onClick={handleChangePassword}>Cambiar password</button>
+              <button className='btn-blue-dark' onClick={handleChangePassword}>{textButtonChangePassword}</button>
             </div>
           </div>
 
@@ -371,8 +385,8 @@ const UserForm = ({ token, reload, data }) => {
           </button>
           {
             titleForm === 'Registrar nuevo usuario'
-              ? <input type='submit' className='btn-blue-dark w-full' value='Guardar' />
-              : <input type='submit' className='btn-blue-dark w-full' value='Actualizar' />
+              ? <input type='submit' className='btn-blue-dark w-full' value={textButtonSave} />
+              : <input type='submit' className='btn-blue-dark w-full' value={textButtonUpdate} />
             }
         </div>
       </form>

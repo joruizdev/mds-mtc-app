@@ -5,6 +5,7 @@ import RecordForm from './recordForm'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Spinner from '../../components/spinner'
+import { messageAlert } from '../../notifications/notifications'
 
 const Record = () => {
   const [token, setToken] = useState(null)
@@ -13,6 +14,7 @@ const Record = () => {
   const [records, setRecords] = useState([])
   const [reload, setReload] = useState(false)
   const [pending, setPending] = useState(true)
+  const [textButtonCancel, setTextButtonCancel] = useState('Cancelar')
 
   const [query, setQuery] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -28,7 +30,7 @@ const Record = () => {
 
   const handleCancelRecord = (e, row) => {
     e.preventDefault()
-
+    setTextButtonCancel('Cancelando...')
     const MySwal = withReactContent(Swal)
     MySwal.fire({
       text: `Por favor, indique el motivo por el cual quiere cancelar la atención del postulante ${row.postulant.lastname + ' ' + row.postulant.name}`,
@@ -56,16 +58,16 @@ const Record = () => {
         }
         await putRequest('records', data, token)
           .then(response => {
+            console.log(response)
             setReload(true)
+            messageAlert('Se canceló la atención satisfactoriamente', 'success')
           })
-        Swal.fire({
-          position: 'top-end',
-          icon: 'success',
-          text: 'Se canceló la atención satisfactoriamente',
-          showConfirmButton: false,
-          timer: 1500
-        })
+          .catch(e => {
+            console.log(e)
+            messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+          })
       }
+      setTextButtonCancel('Cancelar')
     })
   }
 
@@ -95,12 +97,18 @@ const Record = () => {
         dateEnd: newDate
       }
 
-      const records = await postRequest('records/bydate', data, token)
-
-      campus.toLowerCase() === 'todos'
-        ? setRecords(records)
-        : setRecords(records.filter(elem => elem.campus === campus))
-      setPending(false)
+      postRequest('records/bydate', data, token)
+        .then(response => {
+          campus.toLowerCase() === 'todos'
+            ? setRecords(response)
+            : setRecords(response.filter(elem => elem.campus === campus))
+          setPending(false)
+        }).catch(
+          e => {
+            messageAlert('Ocurrió un error, por favor vuelva a intentarlo en unos minutos')
+            console.log(e)
+          }
+        )
     }
   }
 
@@ -153,7 +161,7 @@ const Record = () => {
       cell: row => {
         if (typeUer.toLowerCase() === 'admisión') return 'No tienes permisos'
         if (row.canceled || row.closed) return <button className='px-4 py-2 bg-slate-500 text-white rounded-md'>Cancelar</button>
-        if (row.canceled === false) return <button className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-400' onClick={e => handleCancelRecord(e, row)}>Cancelar</button>
+        if (row.canceled === false) return <button className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-400' onClick={e => handleCancelRecord(e, row)}>{textButtonCancel}</button>
       }
     }
   ]

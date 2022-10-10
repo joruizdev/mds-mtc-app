@@ -6,6 +6,8 @@ import { messageAlert } from '../../notifications/notifications'
 const PostulantForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo postulante')
   const [firstLoad, setFirstLoad] = useState(false)
+  const [textButtonSave, setTextButtonSave] = useState('Guardar')
+  const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
 
   const {
     register,
@@ -48,31 +50,40 @@ const PostulantForm = ({ token, reload, data }) => {
   }
 
   const save = async (data) => {
+    setTextButtonSave('Verificando...')
     const result = await postRequest('postulants/bynrodoc', data, token)
-    if (result.length > 0) return messageAlert('Ya existe un postulante con el nro de documento ingresado', 'error')
-
-    try {
-      const response = await postRequest('postulants', data, token)
-      console.log(response)
-      messageAlert('Registro guardado satisfactoriamente', 'success')
-      reload()
-      handleCancel()
-    } catch (error) {
-      messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
+    if (result.length > 0) {
+      messageAlert('Ya existe un postulante con el nro de documento ingresado', 'error')
+      setTextButtonSave('Guardar')
+      return
     }
+
+    await postRequest('postulants', data, token)
+      .then(response => {
+        messageAlert('Registro guardado satisfactoriamente', 'success')
+        reload()
+        handleCancel()
+        setTextButtonSave('Guardando postulante')
+      })
+      .catch(e => {
+        console.log(e)
+        messageAlert('Ocurrió un error, por favor vuelva a intentar en unos minutos', 'error')
+      })
+    await setTextButtonSave('Guardar')
   }
 
   const update = async (data) => {
-    try {
-      const response = await putRequest('postulants', token)
-      console.log(response)
-      reload()
-      handleCancel()
-      messageAlert('Registro actualizado satisfactoriamente', 'success')
-    } catch (error) {
-      console.log(error)
-      messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
-    }
+    setTextButtonUpdate('Actualizando...')
+    await putRequest('postulants', data, token)
+      .then(response => {
+        reload()
+        handleCancel()
+        messageAlert('Registro actualizado satisfactoriamente', 'success')
+      })
+      .catch(e => {
+        messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
+      })
+    await setTextButtonUpdate('Actualizar')
   }
 
   const handleCancel = () => {
@@ -266,8 +277,8 @@ const PostulantForm = ({ token, reload, data }) => {
           </button>
           {
             titleForm === 'Registrar nuevo postulante'
-              ? <input type='submit' className='btn-blue-dark w-full' value='Guardar' />
-              : <input type='submit' className='btn-blue-dark w-full' value='Actualizar' />
+              ? <input type='submit' className='btn-blue-dark w-full' value={textButtonSave} />
+              : <input type='submit' className='btn-blue-dark w-full' value={textButtonUpdate} />
             }
         </div>
       </form>
