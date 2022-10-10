@@ -45,13 +45,15 @@ const Home = () => {
     if (token) {
       const data = {
         dateStart: newDate,
-        dateEnd: newDate
+        dateEnd: newDate,
+        campus,
+        canceled: false
       }
-      await postRequest('records/bydate', data, token)
+
+      const URI = campus.toLowerCase() === 'todos' ? 'records/bydate' : 'records/bydate/campus'
+      await postRequest(URI, data, token)
         .then(records => {
-          campus.toLowerCase() === 'todos'
-            ? setStopwatch(records.filter(elem => elem.canceled === false))
-            : setStopwatch(records.filter(elem => elem.canceled === false && elem.campus === campus))
+          setStopwatch(records)
           setCounter(counter + 1)
           setPending(false)
         })

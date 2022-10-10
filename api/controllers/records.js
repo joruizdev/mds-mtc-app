@@ -23,13 +23,30 @@ recordRouter.get('/:id', userExtractor, (req, res, next) => {
     .catch(err => next(err))
 })
 
-// Search by date
-recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
-  const { dateStart, dateEnd } = req.body
+recordRouter.post('/bydate/campus', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, campus, canceled } = req.body
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
 
   Record.find(
-    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] }).populate('postulant', {
+    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, canceled }).populate('postulant', {
+    _id: 1,
+    name: 1,
+    lastname: 1,
+    typedoc: 1,
+    nrodoc: 1
+  }).then(postulant => {
+    return (postulant) ? res.json(postulant) : res.status(404).end()
+  })
+    .catch(err => next(err))
+})
+
+// Search by date
+recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, canceled } = req.body
+  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+
+  Record.find(
+    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled }).populate('postulant', {
     _id: 1,
     name: 1,
     lastname: 1,

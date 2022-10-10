@@ -48,7 +48,7 @@ const RecordForm = ({ token, records, campus }) => {
         console.log(e)
         messageAlert('Record registrado satisfactoriamente', 'success')
       })
-    await setTextButtonSave('Buscar')
+    setTextButtonSave('Buscar')
   }
 
   const handleCancel = () => {
