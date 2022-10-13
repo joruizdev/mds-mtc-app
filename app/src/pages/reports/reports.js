@@ -3,6 +3,7 @@ import DataTable from 'react-data-table-component'
 import ExportToExcel from '../../components/exportToExcel'
 import { postRequest } from '../../services/services'
 import Spinner from '../../components/spinner'
+import { notificationError } from '../../notifications/notifications'
 
 const Reports = () => {
   const [pending, setPending] = useState(true)
@@ -43,34 +44,36 @@ const Reports = () => {
   const showRecords = async () => {
     setPending(true)
     if (token) {
-      const data = { dateStart, dateEnd }
-      const dataRecords = await postRequest('records/bydate', data, token)
-
-      campus.toLowerCase() === 'todos'
-        ? setRecords(dataRecords)
-        : setRecords(dataRecords.filter(elem => elem.campus === campus))
-      setNewRecords([])
-      setPending(false)
-      // eslint-disable-next-line array-callback-return
-      dataRecords.map(elem => {
-        const record = {
-          Postulante: elem.postulant.lastname + ' ' + elem.postulant.name,
-          TipoDoc: elem.postulant.typedoc,
-          NroDoc: elem.postulant.nrodoc,
-          Fecha: new Date(elem.date).toLocaleDateString(),
-          Local: elem.campus,
-          NroOrden: elem.order,
-          TipoLic: elem.typelic,
-          TipoProc: elem.typeproc,
-          HoraInicio: new Date(elem.timestart).toLocaleTimeString(),
-          HoraFinal: new Date(elem.timeend).toLocaleTimeString(),
-          HoraCierre: new Date(elem.timeclose).toLocaleTimeString(),
-          Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : 'Iniciado'
-        }
-        setNewRecords(newRecords => newRecords.concat(record))
-      })
-
-      campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
+      const data = { dateStart, dateEnd, campus }
+      await postRequest('records/bydate', data, token)
+        .then(response => {
+          setRecords(response)
+          setNewRecords([])
+          setPending(false)
+          // eslint-disable-next-line array-callback-return
+          response.map(elem => {
+            const record = {
+              Postulante: elem.postulant.lastname + ' ' + elem.postulant.name,
+              TipoDoc: elem.postulant.typedoc,
+              NroDoc: elem.postulant.nrodoc,
+              Fecha: new Date(elem.date).toLocaleDateString(),
+              Local: elem.campus,
+              NroOrden: elem.order,
+              TipoLic: elem.typelic,
+              TipoProc: elem.typeproc,
+              HoraInicio: new Date(elem.timestart).toLocaleTimeString(),
+              HoraFinal: new Date(elem.timeend).toLocaleTimeString(),
+              HoraCierre: new Date(elem.timeclose).toLocaleTimeString(),
+              CostoExamen: elem.price,
+              Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : 'Iniciado'
+            }
+            setNewRecords(newRecords => newRecords.concat(record))
+          })
+          campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
+        }).catch(error => {
+          console.error(error)
+          notificationError()
+        })
     }
   }
 
@@ -88,7 +91,8 @@ const Reports = () => {
     {
       name: 'Apellidos y Nombres',
       selector: row => <span className='capitalize'>{String(row.postulant.name + ' ' + row.postulant.lastname).toLowerCase()}</span>,
-      sortable: true
+      sortable: true,
+      wrap: true
     },
     {
       name: 'Tipo de doc.',
@@ -108,6 +112,12 @@ const Reports = () => {
     {
       name: 'Tipo de proc.',
       selector: row => row.typeproc,
+      sortable: true,
+      wrap: true
+    },
+    {
+      name: 'Costo',
+      selector: row => row.price,
       sortable: true
     },
     {
@@ -125,7 +135,8 @@ const Reports = () => {
     },
     {
       name: 'Motivo de cancelación',
-      selector: row => row.reason
+      selector: row => row.reason,
+      wrap: true
     },
     {
       name: 'Observaciones',

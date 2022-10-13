@@ -4,7 +4,7 @@ import { postRequest } from '../services/services'
 import { useState, useEffect } from 'react'
 import imgNoFound from '../aseets/no-found.webp'
 import Spinner from '../components/spinner'
-import { messageAlert } from '../notifications/notifications'
+import { notificationError } from '../notifications/notifications'
 
 const Home = () => {
   const [stopwatch, setStopwatch] = useState([])
@@ -50,15 +50,14 @@ const Home = () => {
         canceled: false
       }
 
-      const URI = campus.toLowerCase() === 'todos' ? 'records/bydate' : 'records/bydate/campus'
-      await postRequest(URI, data, token)
+      await postRequest('records/bydate', data, token)
         .then(records => {
           setStopwatch(records)
           setCounter(counter + 1)
           setPending(false)
         })
         .catch((e) => {
-          messageAlert('Ocurrió un error, intentelo nuevamente en unos minutos', 'error')
+          notificationError()
           console.error(e)
         })
     }
@@ -73,7 +72,7 @@ const Home = () => {
           </span>
           <input
             type='date'
-            className='input-text w-full lg:w-80'
+            className='input-date w-full lg:w-80'
             defaultValue={new Date().toISOString().split('T')[0]}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -84,7 +83,7 @@ const Home = () => {
               ? <>
                   <span className='text-sm font-medium text-gray-700'>Local</span>
                   <select
-                    className='input-text lg:w-80'
+                    className='input-select lg:w-80'
                     onChange={(e) => setCampus(e.target.value)}
                   >
                     <option value='Todos'>Todos</option>

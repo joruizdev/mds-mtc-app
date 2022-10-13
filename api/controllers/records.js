@@ -23,12 +23,15 @@ recordRouter.get('/:id', userExtractor, (req, res, next) => {
     .catch(err => next(err))
 })
 
-recordRouter.post('/bydate/campus', userExtractor, async (req, res, next) => {
-  const { dateStart, dateEnd, campus, canceled } = req.body
-  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+recordRouter.post('/voucher', userExtractor, async (req, res, next) => {
+  const { campus, canceled, invoiced } = req.body
 
-  Record.find(
-    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, canceled }).populate('postulant', {
+  let queryFilter = {}
+
+  String(campus).toLowerCase() === 'todos' && (queryFilter = { canceled, invoiced })
+  String(campus).toLowerCase() !== 'todos' && (queryFilter = { canceled, invoiced, campus })
+
+  Record.find(queryFilter).populate('postulant', {
     _id: 1,
     name: 1,
     lastname: 1,
@@ -40,13 +43,25 @@ recordRouter.post('/bydate/campus', userExtractor, async (req, res, next) => {
     .catch(err => next(err))
 })
 
-// Search by date
+// Search by date, campus and canceled
 recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
-  const { dateStart, dateEnd, canceled } = req.body
+  const { dateStart, dateEnd, canceled, campus } = req.body
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
 
-  Record.find(
-    { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled }).populate('postulant', {
+  let queryFilter = {}
+
+  canceled === undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] })
+  canceled === undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus })
+  canceled !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled })
+  canceled !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus })
+
+  /* if (canceled === undefined) {
+    queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] }
+  } else {
+    queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled }
+  } */
+
+  Record.find(queryFilter).populate('postulant', {
     _id: 1,
     name: 1,
     lastname: 1,

@@ -1,51 +1,14 @@
 import axios from 'axios'
-/* export const getRequest = async url => {
-  try {
-    const response = await fetch(`${url}`)
-    const data = await response.json()
-    return data
-  } catch (e) {
-    return e
-  }
-} */
+
 export const getRequest = async url => {
   const request = axios.get(url)
   return request.then(response => response.data)
 }
 
-/* export const getRequestById = async (url, id) => {
-  try {
-    const response = await fetch(`${url}/${id}`)
-    const data = await response.json()
-    return data
-  } catch (e) {
-    return e
-  }
-} */
-
 export const getRequestById = async (url, id) => {
   const request = axios.get(`${url}/${id}`)
   return request.then(response => response.data)
 }
-
-/* export const postRequest = async (url, requestData, token) => {
-  const settings = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(requestData)
-  }
-  try {
-    const response = await fetch(`${url}`, settings)
-    const data = await response.json()
-    return data
-  } catch (e) {
-    return e
-  }
-} */
 
 export const postRequest = async (url, requestData, token) => {
   const config = {
@@ -59,24 +22,22 @@ export const postRequest = async (url, requestData, token) => {
     })
 }
 
-/* export const putRequest = async (url, requestData, token) => {
-  const settings = {
-    method: 'PUT',
+export const postRequestRUC = async (url, requestData) => {
+  const config = {
+    mode: 'no-cors',
     headers: {
+      'Access-Control-Allow-Origin': '*',
       Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(requestData)
+      'Content-Type': 'application/json'
+    }
   }
-  try {
-    const response = await fetch(`${url}/${requestData.id}`, settings)
-    const data = await response.json()
-    return data
-  } catch (e) {
-    return e
-  }
-} */
+  return axios
+    .post(url, requestData, config)
+    .then((response) => {
+      const { data } = response
+      return data
+    })
+}
 
 export const putRequest = async (url, requestData, token) => {
   const config = {
@@ -89,26 +50,6 @@ export const putRequest = async (url, requestData, token) => {
       return data
     })
 }
-
-/* export const putRequestChangePassword = async (url, requestData, token) => {
-  const settings = {
-    method: 'PUT',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(requestData)
-  }
-  try {
-    const response = await fetch(`${url}/${requestData.id}`, settings)
-    const data = await response.json()
-    return data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-} */
 
 export const putRequestChangePassword = async (url, requestData, token) => {
   const config = {

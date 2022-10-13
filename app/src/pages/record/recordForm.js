@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { postRequest } from '../../services/services'
-import { messageAlert } from '../../notifications/notifications'
+import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const RecordForm = ({ token, records, campus }) => {
   const {
@@ -30,7 +30,7 @@ const RecordForm = ({ token, records, campus }) => {
     const result = await records.filter(record => record.postulant.nrodoc === nroDoc.trim() && record.canceled === false)
     if (result.length > 0) {
       setTextButtonSave('Buscar')
-      return messageAlert('Ya existe un record del postulante con fecha de hoy', 'error')
+      return notificationError('Ya existe un record del postulante con fecha de hoy', 'error')
     }
 
     data.postulantId = data.id
@@ -40,13 +40,13 @@ const RecordForm = ({ token, records, campus }) => {
     await postRequest('records', data, token)
       .then(response => {
         console.log(response)
-        messageAlert('Record registrado satisfactoriamente', 'success')
+        notificationSuccess('Record registrado satisfactoriamente', 'success')
         navigate('/')
         navigate(0)
       })
       .catch(e => {
         console.log(e)
-        messageAlert('Record registrado satisfactoriamente', 'success')
+        notificationError()
       })
     setTextButtonSave('Buscar')
   }
@@ -88,17 +88,19 @@ const RecordForm = ({ token, records, campus }) => {
           />
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
             <div className='flex flex-col'>
-              <span className='text-sm font-medium text-gray-700'>
+              <span className='text-sm font-medium text-gray-700 mb-1'>
                 Buscar postulante
               </span>
               <div className='flex mb-3'>
-                <input
-                  type='text'
-                  className='input-text border-r-0 rounded-r-none'
-                  placeholder='Nro. documento'
-                  ref={txtNroDoc}
-                />
-                <input type='button' className='mt-1 rounded-l-none btn-blue-dark cursor-pointer' value={textButtonSearch} onClick={searchPostulant} />
+                <div className='flex justify-between rounded-md p-0 py-0 border-0 w-full mb-1'>
+                  <input
+                    type='text'
+                    className='py-1 px-3 placeholder-slate-400 focus:ring-1 focus:outline-none focus:border-sky-500 focus:ring-sky-500  border border-slate-300 shadow-sm rounded-l-md w-full'
+                    placeholder='Nro. documento'
+                    ref={txtNroDoc}
+                  />
+                  <input type='button' className='bg-mds-blue text-white rounded-r-md px-4 cursor-pointer' value={textButtonSearch} onClick={searchPostulant} />
+                </div>
               </div>
             </div>
             <p className='text-red-500 text-sm'>{messageNoFound}</p>

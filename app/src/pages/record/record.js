@@ -5,7 +5,7 @@ import RecordForm from './recordForm'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Spinner from '../../components/spinner'
-import { messageAlert } from '../../notifications/notifications'
+import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const Record = () => {
   const [token, setToken] = useState(null)
@@ -60,11 +60,11 @@ const Record = () => {
           .then(response => {
             console.log(response)
             setReload(true)
-            messageAlert('Se canceló la atención satisfactoriamente', 'success')
+            notificationSuccess('Se canceló la atención satisfactoriamente')
           })
           .catch(e => {
             console.log(e)
-            messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+            notificationError()
           })
       }
       setTextButtonCancel('Cancelar')
@@ -94,20 +94,18 @@ const Record = () => {
         : date
       const data = {
         dateStart: newDate,
-        dateEnd: newDate
+        dateEnd: newDate,
+        campus
       }
-
       postRequest('records/bydate', data, token)
         .then(response => {
-          campus.toLowerCase() === 'todos'
-            ? setRecords(response)
-            : setRecords(response.filter(elem => elem.campus === campus))
+          setRecords(response)
           setPending(false)
-        }).catch(
-          e => {
-            messageAlert('Ocurrió un error, por favor vuelva a intentarlo en unos minutos')
-            console.log(e)
-          }
+        })
+        .catch(e => {
+          notificationError()
+          console.log(e)
+        }
         )
     }
   }

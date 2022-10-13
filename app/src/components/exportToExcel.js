@@ -14,7 +14,7 @@ const ExportToExcel = ({ data, fileName }) => {
   }
 
   return (
-    <button className='btn-blue-dark w-full' onClick={e => exportToCSV(data, fileName)}>Exportar</button>
+    <button className='btn-blue-dark my-1 w-full' onClick={e => exportToCSV(data, fileName)}>Exportar</button>
   )
 }
 export default ExportToExcel

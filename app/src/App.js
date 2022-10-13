@@ -17,6 +17,7 @@ const App = () => {
   const loadUser = () => {
     setReload(true)
   }
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedSystemAppUser')
     if (loggedUserJSON) {

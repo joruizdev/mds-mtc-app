@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest } from '../../services/services'
-import { messageAlert } from '../../notifications/notifications'
+import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const PostulantForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo postulante')
@@ -20,7 +20,9 @@ const PostulantForm = ({ token, reload, data }) => {
     defaultValues: {
       id: '0',
       typedoc: 'DNI',
-      gender: 'Masculino'
+      gender: 'Masculino',
+      dateregister: new Date().toISOString().split('T')[0],
+      dateofbirth: new Date().toISOString().split('T')[0]
     }
   })
 
@@ -43,6 +45,7 @@ const PostulantForm = ({ token, reload, data }) => {
     setValue('telephone', data.telephone)
     setValue('adress', String(data.adress).toLowerCase())
     setValue('dateofbirth', new Date(data.dateofbirth).toISOString().split('T')[0])
+    setValue('dateregister', new Date(data.dateregister).toISOString().split('T')[0])
   }
 
   const onSubmit = data => {
@@ -53,21 +56,21 @@ const PostulantForm = ({ token, reload, data }) => {
     setTextButtonSave('Verificando...')
     const result = await postRequest('postulants/bynrodoc', data, token)
     if (result.length > 0) {
-      messageAlert('Ya existe un postulante con el nro de documento ingresado', 'error')
+      notificationError('Ya existe un postulante con el nro de documento ingresado', 'error')
       setTextButtonSave('Guardar')
       return
     }
 
     await postRequest('postulants', data, token)
       .then(response => {
-        messageAlert('Registro guardado satisfactoriamente', 'success')
+        notificationSuccess('Registro guardado satisfactoriamente')
         reload()
         handleCancel()
         setTextButtonSave('Guardando postulante')
       })
       .catch(e => {
         console.log(e)
-        messageAlert('Ocurrió un error, por favor vuelva a intentar en unos minutos', 'error')
+        notificationError()
       })
     await setTextButtonSave('Guardar')
   }
@@ -78,10 +81,10 @@ const PostulantForm = ({ token, reload, data }) => {
       .then(response => {
         reload()
         handleCancel()
-        messageAlert('Registro actualizado satisfactoriamente', 'success')
+        notificationSuccess('Registro actualizado satisfactoriamente')
       })
       .catch(e => {
-        messageAlert('Ocurrió un error, por favor intentelo nuevamente', 'error')
+        notificationError()
       })
     await setTextButtonUpdate('Actualizar')
   }
@@ -247,7 +250,7 @@ const PostulantForm = ({ token, reload, data }) => {
                   required: true
                 })}
               />
-              {errors?.dateofbirth?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
+              {errors?.dateregister?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
             </div>
           </div>
 

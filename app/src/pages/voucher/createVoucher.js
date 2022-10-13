@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
-import { postRequest } from '../../services/services'
 import Spinner from '../../components/spinner'
 import CreateVoucherForm from './createVoucherForm'
+import { notificationError } from '../../notifications/notifications'
+import { postRequest } from '../../services/services'
 
 const CreateVoucher = () => {
   const [pending, setPending] = useState(true)
@@ -10,9 +11,6 @@ const CreateVoucher = () => {
   const [reload, setReload] = useState()
   const [campus, setCampus] = useState()
   const [records, setRecords] = useState([])
-  const [dateStart, setDateStart] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
-  const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
-  const [newRecords, setNewRecords] = useState([])
   const [query, setQuery] = useState('')
   const [selectedRows, setSelectedRows] = useState([])
 
@@ -38,35 +36,22 @@ const CreateVoucher = () => {
       showRecords()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, reload, dateEnd, dateStart])
+  }, [token, reload])
 
   const showRecords = async () => {
     setPending(true)
     if (token) {
-      const data = { dateStart, dateEnd }
-      const dataRecords = await postRequest('records/bydate', data, token)
-
-      campus.toLowerCase() === 'todos'
-        ? setRecords(dataRecords)
-        : setRecords(dataRecords.filter(elem => elem.campus === campus))
-      setNewRecords([])
-      setPending(false)
-      // eslint-disable-next-line array-callback-return
-      dataRecords.map(elem => {
-        const record = {
-          Postulante: elem.postulant.lastname + ' ' + elem.postulant.name,
-          TipoDoc: elem.postulant.typedoc,
-          NroDoc: elem.postulant.nrodoc,
-          Fecha: new Date(elem.date).toLocaleDateString(),
-          Local: elem.campus,
-          NroOrden: elem.order,
-          TipoLic: elem.typelic,
-          TipoProc: elem.typeproc
-        }
-        setNewRecords(newRecords => newRecords.concat(record))
-      })
-
-      campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
+      const data = { campus, canceled: false, invoiced: false }
+      await postRequest('records/voucher', data, token)
+        .then(response => {
+          setRecords(response)
+          setPending(false)
+        })
+        .catch(error => {
+          console.error(error)
+          notificationError()
+          setPending(false)
+        })
     }
   }
 
@@ -115,34 +100,6 @@ const CreateVoucher = () => {
   return (
     <>
       <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
-        <div className='grid grid-cols-12 gap-5 py-5 hidden'>
-          <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
-            <div className='flex flex-col mb-3'>
-              <span className='text-sm font-medium text-gray-700'>
-                Fecha inicio
-              </span>
-              <input
-                type='date'
-                className='input-text'
-                defaultValue={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setDateStart(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
-            <div className='flex flex-col mb-3'>
-              <span className='text-sm font-medium text-gray-700'>
-                Fecha final
-              </span>
-              <input
-                type='date'
-                className='input-text'
-                defaultValue={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setDateEnd(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
         <div className='relative col-span-12'>
           <div className='flex flex-col gap-5 absolute z-10 w-full md:flex-row lg:w-96 lg:right-0'>
             <input

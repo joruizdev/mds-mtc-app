@@ -36,8 +36,7 @@ postulantsRouter.put('/:id', userExtractor, async (req, response, next) => {
     dateofbirth: postulant.dateofbirth,
     gender: postulant.gender,
     telephone: postulant.telephone,
-    adress: postulant.adress,
-    dateregister: new Date(postulant.dateregister).toISOString()
+    adress: postulant.adress
   }
 
   try {

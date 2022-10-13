@@ -2,11 +2,9 @@ require('dotenv').config()
 require('./mongo')
 const express = require('express')
 const app = express()
-const port = process.env.PORT
 const cors = require('cors')
 const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
-
 const usersRouter = require('./controllers/users')
 const postulantsRouter = require('./controllers/postulants')
 const recordRouter = require('./controllers/records')
@@ -16,6 +14,7 @@ app.use(cors())
 app.use(express.json())
 
 if (process.env.NODE_ENV !== 'development') app.use(express.static('../app/build'))
+const port = process.env.NODE_ENV === 'development' ? process.env.PORT_DEV : process.env.PORT
 app.use('/postulants', postulantsRouter)
 app.use('/users', usersRouter)
 app.use('/records', recordRouter)

@@ -4,7 +4,7 @@ import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import PostulantForm from './postulantForm'
 import Spinner from '../../components/spinner'
-import { messageAlert } from '../../notifications/notifications'
+import { notificationError } from '../../notifications/notifications'
 
 const Postulant = () => {
   const [pending, setPending] = useState(true)
@@ -36,7 +36,7 @@ const Postulant = () => {
         setPending(false)
       })
       .catch(e => {
-        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+        notificationError()
         console.log(e)
       })
   }

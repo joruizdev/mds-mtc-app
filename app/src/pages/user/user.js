@@ -4,7 +4,7 @@ import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import UserForm from './userForm'
 import Spinner from '../../components/spinner'
-import { messageAlert } from '../../notifications/notifications'
+import { messageAlert, notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const User = () => {
   const [token, setToken] = useState(null)
@@ -37,7 +37,7 @@ const User = () => {
       })
       .catch(e => {
         console.log(e)
-        messageAlert('Ocurrio un error, por favor intente nuevamente en unos minutos', 'error')
+        notificationError()
       })
   }
 

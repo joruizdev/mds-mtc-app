@@ -11,3 +11,41 @@ export const messageAlert = (text, icon) => {
     timer: 1500
   })
 }
+
+export const notificationSuccess = (text) => {
+  const MySwal = withReactContent(Swal)
+  MySwal.fire({
+    text,
+    position: 'top-end',
+    icon: 'success',
+    showConfirmButton: false,
+    timer: 1500
+  })
+}
+
+export const notificationWarning = (text) => {
+  const MySwal = withReactContent(Swal)
+  MySwal.fire({
+    text,
+    position: 'top-end',
+    icon: 'warning',
+    showConfirmButton: false,
+    confirmButtonColor: 'btn-yellow'
+  })
+}
+
+export const notificationError = (text = 'Ocurrió un error, por favor intentelo nuevamente en unos minutos') => {
+  const MySwal = withReactContent(Swal)
+  MySwal.fire({
+    customClass: {
+      cancelButton: 'btn-red-dark'
+    },
+    buttonsStyling: false,
+    text,
+    position: 'top-end',
+    icon: 'error',
+    showConfirmButton: false,
+    showCancelButton: true,
+    cancelButtonText: 'Entendido'
+  })
+}

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest, putRequestChangePassword } from '../../services/services'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const UserForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo usuario')
@@ -64,17 +63,17 @@ const UserForm = ({ token, reload, data }) => {
     setTextButtonSave('Verificando...')
     const newData = { ...data, records: [], postulants: [] }
     const result = await postRequest('users/bynrodoc', newData, token)
-    if (result.length > 0) return messageAlert('Ya existe un usuario con el nro de documento ingresado', 'error')
+    if (result.length > 0) return notificationError('Ya existe un usuario con el nro de documento ingresado')
     setTextButtonSave('Guardando...')
     await postRequest('users', data, token)
       .then(data => {
         console.log(data)
         reload()
         handleCancel()
-        messageAlert('Registro guardado satisfactoriamente', 'success')
+        notificationSuccess('Registro guardado satisfactoriamente')
       })
       .catch(e => {
-        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos minutos', 'error')
+        notificationError()
         console.error(e)
       })
     setTextButtonSave('Guardar')
@@ -84,12 +83,12 @@ const UserForm = ({ token, reload, data }) => {
     setTextButtonUpdate('Actualizando')
     await putRequest('users', data, token)
       .then(response => {
-        messageAlert('Registro actualizado satisfactoriamente', 'success')
+        notificationSuccess('Registro actualizado satisfactoriamente')
         handleCancel()
         reload()
       })
       .catch(error => {
-        messageAlert('Ocurrió un error, por favor intentelo nuevamente en unos munutos', 'error')
+        notificationError()
         console.error(error)
       })
     setTextButtonUpdate('Actualizar')
@@ -124,27 +123,17 @@ const UserForm = ({ token, reload, data }) => {
     if (changePassword) {
       await putRequestChangePassword('users/changepassword', data, token)
         .then(response => {
-          messageAlert('Password actualizado satisfactoriamente', 'success')
+          notificationSuccess('Password actualizado satisfactoriamente')
           reload()
           handleCancel()
         })
         .catch(error => {
-          messageAlert('Ocurrió un error por favor intentelo nuevamente en unos minutos', 'error')
+          notificationError()
           console.log(error)
         })
     }
   }
 
-  const messageAlert = (text, icon) => {
-    const MySwal = withReactContent(Swal)
-    MySwal.fire({
-      text,
-      position: 'top-end',
-      icon,
-      showConfirmButton: false,
-      timer: 1500
-    })
-  }
   return (
     <div>
       <div>
@@ -354,7 +343,7 @@ const UserForm = ({ token, reload, data }) => {
           </div>
 
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 self-end'>
-            <div className='flex flex-col mb-3'>
+            <div className='flex flex-col mb-4'>
               <button className='btn-blue-dark' onClick={handleChangePassword}>{textButtonChangePassword}</button>
             </div>
           </div>

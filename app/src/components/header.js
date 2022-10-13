@@ -41,7 +41,7 @@ const Header = () => {
 
   return (
     <>
-      <header className='container mx-auto flex px-5 justify-between py-4 lg:px-0 lx:px-0'>
+      <header className='container mx-auto flex px-5 justify-between py-4 lg:px-0 lx:px-0 z-30'>
         <div className='flex flex-col gap-5 lg:flex lg:flex-row lg:gap-10 lg:justify-center lg:items-center xl:flex xl:flex-row xl:gap-10 xl:justify-center xl:items-center'>
           <div className='w-28'>
             <img src={logo} alt='logo' />
