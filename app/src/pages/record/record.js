@@ -14,7 +14,6 @@ const Record = () => {
   const [records, setRecords] = useState([])
   const [reload, setReload] = useState(false)
   const [pending, setPending] = useState(true)
-  const [textButtonCancel, setTextButtonCancel] = useState('Cancelar')
 
   const [query, setQuery] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -30,7 +29,6 @@ const Record = () => {
 
   const handleCancelRecord = (e, row) => {
     e.preventDefault()
-    setTextButtonCancel('Cancelando...')
     const MySwal = withReactContent(Swal)
     MySwal.fire({
       text: `Por favor, indique el motivo por el cual quiere cancelar la atención del postulante ${row.postulant.lastname + ' ' + row.postulant.name}`,
@@ -67,7 +65,6 @@ const Record = () => {
             notificationError()
           })
       }
-      setTextButtonCancel('Cancelar')
     })
   }
 
@@ -159,7 +156,7 @@ const Record = () => {
       cell: row => {
         if (typeUer.toLowerCase() === 'admisión') return 'No tienes permisos'
         if (row.canceled || row.closed) return <button className='px-4 py-2 bg-slate-500 text-white rounded-md'>Cancelar</button>
-        if (row.canceled === false) return <button className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-400' onClick={e => handleCancelRecord(e, row)}>{textButtonCancel}</button>
+        if (row.canceled === false) return <button className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-400' onClick={e => handleCancelRecord(e, row)}>Cancelar</button>
       }
     }
   ]
