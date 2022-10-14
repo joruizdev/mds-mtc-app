@@ -140,7 +140,8 @@ const Reports = () => {
     },
     {
       name: 'Observaciones',
-      selector: row => row.observations
+      selector: row => row.observations,
+      wrap: true
     }
   ]
 
