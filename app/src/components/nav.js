@@ -29,6 +29,7 @@ const Nav = ({ typeuser, click }) => {
         <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/postulant'>Postulante</Link></div>
         <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/record'>Record</Link></div>
         <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/reports'>Reportes</Link></div>
+        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/appointment'>Citas</Link></div>
         <div onClick={showMenu} className='hidden text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'>
           Comprobantes
         </div>
