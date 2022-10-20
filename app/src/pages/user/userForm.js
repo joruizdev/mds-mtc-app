@@ -55,7 +55,7 @@ const UserForm = ({ token, reload, data }) => {
   }
 
   const onSubmit = data => {
-    console.log(data)
+    // console.log(data)
     titleForm === 'Registrar nuevo usuario' ? save(data) : update(data)
   }
 

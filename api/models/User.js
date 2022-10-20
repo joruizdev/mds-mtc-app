@@ -25,6 +25,10 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Record'
   }],
+  appointment: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Appointment'
+  }],
   active: Boolean
 })
 

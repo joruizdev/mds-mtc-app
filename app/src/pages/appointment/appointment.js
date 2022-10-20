@@ -3,88 +3,130 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { useEffect, useState } from 'react'
-import ModalForm from '../../components/ModalForm'
-// import Swal from 'sweetalert2'
+import { getRequest } from '../../services/services'
+import { notificationError } from '../../notifications/notifications'
+import ModalAppointment from './modalAppointment'
 
 const Appointment = () => {
-  // eslint-disable-next-line no-unused-vars
-  const [openModal, setOpenModal] = useState(false)
+  const [token, setToken] = useState(null)
+  const [reload, setReload] = useState(false)
+  const [campus, setCampus] = useState('')
+  const [event, setEvent] = useState([])
+  const [eventEdit, setEventEdit] = useState([])
+  const [showModal, setShowModal] = useState(false)
 
-  const handleDateClick = (info) => { // bind with an arrow function
-    // alert(info.dateStr)
-    // showModal()
-    openModal(true)
+  const loadAppointment = () => {
+    getRequest('appointment')
+      .then(response => {
+        // eslint-disable-next-line array-callback-return
+        response = response.map((elem) => {
+          const date = elem.appointmentdate.split('T')[0]
+          const newDate = new Date(date + 'T' + elem.appointmenttime)
+          const secondTime = new Date(newDate).getTime()
+          const addTime = 30 * 60000
+          elem.start = new Date(newDate).toISOString()
+          elem.end = new Date(secondTime + addTime).toISOString()
+          elem.title = elem.postulant.name + ' ' + elem.postulant.lastname + ' ' + elem.typelic
+          elem.appointmentId = elem.id
+          setEvent(response)
+        })
+      })
+      .catch(error => {
+        console.error(error)
+        notificationError()
+      })
   }
 
   useEffect(() => {
+    loadAppointment()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reload])
 
-  }, [openModal])
+  useEffect(() => {
+    setReload(false)
+    const loggedUserJSON = window.localStorage.getItem('loggedSystemAppUser')
 
-  const events = []
-
-  /* const showModal = async () => {
-    const { value: formValues } = await Swal.fire({
-      title: 'Multiple inputs',
-      html:
-        '<input id="swal-input1" class="swal2-input">' +
-        '<input id="swal-input2" class="swal2-input">',
-      focusConfirm: false,
-      preConfirm: () => {
-        return [
-          document.getElementById('swal-input1').value,
-          document.getElementById('swal-input2').value
-        ]
-      }
-    })
-
-    if (formValues) {
-      Swal.fire(JSON.stringify(formValues))
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setToken(user.token)
+      setCampus(user.campus)
     }
-  } */
+  }, [token, reload])
+
+  const handleReload = () => {
+    setReload(true)
+  }
+
+  const handleShowModal = () => {
+    setShowModal(false)
+  }
+
+  const showInfo = (info) => {
+    info.jsEvent.preventDefault()
+    setEventEdit(info.event._def.extendedProps)
+    setShowModal(true)
+  }
 
   return (
-    <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
-      {openModal ? <ModalForm /> : ''}
-      <FullCalendar
-        locale='es'
-        allDaySlot={false}
-        slotMinTime='08:00:00'
-        slotMaxTime='18:00:00'
-        expandRows
-        height='100vh'
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        dateClick={handleDateClick}
-        selectable
-        initialView='timeGridWeek'
-        slotDuration='00:30:00'
-        slotLabelInterval='00:30:00'
-        slotLabelFormat={
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-            omitZeroMinute: false,
-            meridiem: 'short'
-          }
+    <>
+      {
+      showModal
+        ? <ModalAppointment show={handleShowModal} token={token} event={event} reload={handleReload} campus={campus} eventEdit={eventEdit} />
+        : ''
         }
-        events={events}
-        hiddenDays={[0]}
-        headerToolbar={
-          {
-            left: 'timeGridWeek,timeGridDay',
-            center: 'title',
-            right: 'prevYear,prev,next,nextYear'
-          }
-        }
-        views={
-          {
-            dayGridMonth: { // name of view
-              titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
-              // other view-specific options here
+      <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
+        <FullCalendar
+          locale='es'
+          allDaySlot={false}
+          slotMinTime='08:00:00'
+          slotMaxTime='18:00:00'
+          expandRows
+          height='100vh'
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          selectable
+          initialView='timeGridWeek'
+          slotDuration='00:30:00'
+          slotLabelInterval='00:30:00'
+          eventClick={(info) => showInfo(info)}
+          slotLabelFormat={
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+              omitZeroMinute: false,
+              meridiem: 'short'
             }
           }
-        }
-      />
-    </div>
+          events={event}
+          hiddenDays={[0]}
+          customButtons={
+            {
+              myCustomButton: {
+                text: 'Reservar cita',
+                click: () => {
+                  setShowModal(true)
+                  setEventEdit([])
+                }
+              }
+            }
+          }
+          headerToolbar={
+            {
+              left: 'timeGridWeek,timeGridDay myCustomButton',
+              center: 'title',
+              right: 'prevYear,prev,next,nextYear'
+            }
+          }
+          views={
+            {
+              dayGridMonth: { // name of view
+                titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
+                // other view-specific options here
+              }
+            }
+          }
+        />
+      </div>
+    </>
   )
 }
 

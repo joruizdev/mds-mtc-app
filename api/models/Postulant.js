@@ -17,6 +17,10 @@ const postulantSchema = new Schema({
   records: [{
     type: Schema.Types.ObjectId,
     ref: 'Record'
+  }],
+  appointment: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Appointment'
   }]
 
 })

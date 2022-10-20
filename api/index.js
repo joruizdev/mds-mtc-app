@@ -9,6 +9,7 @@ const usersRouter = require('./controllers/users')
 const postulantsRouter = require('./controllers/postulants')
 const recordRouter = require('./controllers/records')
 const loginRouter = require('./controllers/login')
+const appointmentRouter = require('./controllers/appointment')
 
 app.use(cors())
 app.use(express.json())
@@ -18,6 +19,7 @@ const port = process.env.NODE_ENV === 'development' ? process.env.PORT_DEV : pro
 app.use('/postulants', postulantsRouter)
 app.use('/users', usersRouter)
 app.use('/records', recordRouter)
+app.use('/appointment', appointmentRouter)
 app.use('/login', loginRouter)
 
 app.use(notFound)
