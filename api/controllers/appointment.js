@@ -79,34 +79,45 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
   }
 })
 
-/* recordRouter.put('/:id', userExtractor, (req, response, next) => {
+appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
   const { id } = req.params
-  const record = req.body
 
-  const newRecordInfo = {
-    typelic: record.typelic,
-    typeproc: record.typeproc,
-    campus: record.campus,
-    date: record.date,
-    timestart: record.timestart,
-    timeend: record.timeend,
-    timeclose: record.timeclose,
-    initiated: record.initiated,
-    closed: record.closed,
-    canceled: record.canceled,
-    observations: record.observations,
-    reason: record.reason,
-    price: record.price,
-    invoiced: record.invoiced,
-    paid: record.paid
+  const {
+    typelic,
+    typeproc,
+    campus,
+    appointmentdate,
+    appointmenttime,
+    school,
+    nameschool,
+    reschedule,
+    rescheduledate,
+    observations,
+    confirmed,
+    canceled,
+    reason
+  } = req.body
+
+  const newAppointmentInfo = {
+    typelic,
+    typeproc,
+    campus,
+    appointmentdate,
+    appointmenttime,
+    school,
+    nameschool,
+    reschedule,
+    rescheduledate,
+    observations,
+    confirmed,
+    canceled,
+    reason
   }
 
-  Record.findByIdAndUpdate(id, newRecordInfo, { new: true })
+  Appointment.findByIdAndUpdate(id, newAppointmentInfo, { new: true })
     .then(res => {
       response.json(res)
     }).catch(err => next(err))
 })
- */
-// cannot be permanently deleted, it will be changed from canceled state to 1
 
 module.exports = appointmentRouter

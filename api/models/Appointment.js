@@ -23,7 +23,7 @@ const appointmentSchema = new Schema({
     ref: 'User'
   },
   confirmed: Boolean,
-  candeled: Boolean,
+  canceled: Boolean,
   reason: String,
   observations: String
 

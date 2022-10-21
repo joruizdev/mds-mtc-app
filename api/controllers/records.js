@@ -55,12 +55,6 @@ recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
   canceled !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled })
   canceled !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus })
 
-  /* if (canceled === undefined) {
-    queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] }
-  } else {
-    queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled }
-  } */
-
   Record.find(queryFilter).populate('postulant', {
     _id: 1,
     name: 1,

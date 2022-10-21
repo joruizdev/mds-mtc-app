@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { postRequest } from '../../services/services'
+import { postRequest, putRequest } from '../../services/services'
 import { useForm } from 'react-hook-form'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
 import { hourAppointment } from './resources'
 
-const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
+const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, disabled }) => {
   const {
     register,
     handleSubmit,
@@ -22,20 +22,25 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
 
   const [textButtonSearch, setTextButtonSearch] = useState('Buscar')
   const [messageNoFound, setMessageNoFound] = useState('')
+  const [classNameSchool, setClassNameSchool] = useState('hidden')
+  const [classNameReschedule, setClassNameReschedule] = useState('hidden')
 
   useEffect(() => {
-    console.log(eventEdit)
     if (eventEdit.length !== 0) {
+      console.log(eventEdit)
       setValue('appointmenttime', eventEdit.appointmenttime)
       setValue('nrodoc', eventEdit.postulant.nrodoc)
       setValue('name', eventEdit.postulant.lastname + ' ' + eventEdit.postulant.name)
       setValue('typelic', eventEdit.typelic)
       setValue('typeproc', eventEdit.typeproc)
       setValue('school', eventEdit.school)
-      setValue('nameschool', eventEdit.nameschool)
+      setValue('nameschool', eventEdit.school ? eventEdit.nameschool : '')
       setValue('reschedule', eventEdit.reschedule)
-      setValue('rescheduledate', eventEdit.rescheduledate)
+      setValue('rescheduledate', eventEdit.reschedule ? new Date(eventEdit.rescheduledate).toISOString().split('T')[0] : '')
       setValue('observations', eventEdit.observations)
+
+      eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
+      eventEdit.reschedule ? setClassNameReschedule('block') : setClassNameReschedule('hidden')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -57,7 +62,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
   }
 
   const onSubmit = (data) => {
-    handleSave(data)
+    textTitle === 'Actualizar cita' ? handleUpdate(data) : handleSave(data)
   }
 
   const handleSave = async (data) => {
@@ -82,6 +87,62 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
       })
   }
 
+  const handleConfirmed = async () => {
+    const newData = {
+      confirmed: true,
+      id: eventEdit.appointmentId
+    }
+    console.log(newData)
+    await putRequest('appointment', newData, token)
+      .then(response => {
+        console.log(response)
+        notificationSuccess('Cita  confirmada')
+        reload()
+        showModal()
+      })
+      .catch(error => {
+        console.error(error)
+        notificationError()
+      })
+  }
+
+  const handleCanceled = async () => {
+    const newData = {
+      canceled: true,
+      id: eventEdit.appointmentId
+    }
+    await putRequest('appointment', newData, token)
+      .then(response => {
+        console.log(response)
+        notificationSuccess('Cita  cancelada')
+        reload()
+        showModal()
+      })
+      .catch(error => {
+        console.error(error)
+        notificationError()
+      })
+  }
+
+  const handleUpdate = async (data) => {
+    const newData = {
+      ...data,
+      id: eventEdit.appointmentId,
+      rescheduledate: data.reschedule ? data.rescheduledate : ''
+    }
+    await putRequest('appointment', newData, token)
+      .then(response => {
+        console.log(response)
+        notificationSuccess('Datos de la cita actualizada satisfactoriamente')
+        reload()
+        showModal()
+      })
+      .catch(error => {
+        console.error(error)
+        notificationError()
+      })
+  }
+
   const showModal = () => {
     resetField('appointmenttime')
     show()
@@ -92,7 +153,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
       <div className='flex justify-center items-center h-full'>
         <div className='flex flex-col justify-between bg-white rounded-lg shadow-lg'>
           <div className='flex items-start justify-between p-5 rounded-t '>
-            <h3 className='text-2xl'>Reserva de cita</h3>
+            <h3 className='text-2xl'>{textTitle}</h3>
             <button
               className='float-right leading-none font-semibold outline-none focus:outline-none'
               onClick={showModal}
@@ -112,6 +173,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                         type='date'
                         defaultValue={new Date().toISOString().split('T')[0]}
                         className='input-date'
+                        disabled={disabled}
                         {...register('appointmentdate', {
                           required: true
                         })}
@@ -125,6 +187,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                       <span>Hora: </span>
                       <select
                         className='input-select'
+                        disabled={disabled}
                         {...register('appointmenttime', {
                           required: true
                         })}
@@ -142,7 +205,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                       <span className='text-sm font-medium text-gray-700 mb-1'>
                         Buscar postulante
                       </span>
-                      <div className='flex mb-3'>
+                      <div className='flex flex-col mb-3'>
                         <div className='flex justify-between rounded-md p-0 py-0 border-0 w-full mb-1'>
                           <input
                             type='text'
@@ -152,7 +215,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                               required: true
                             })}
                           />
-                          <input type='button' className='bg-mds-blue text-white rounded-r-md px-4 cursor-pointer' value={textButtonSearch} onClick={searchPostulant} />
+                          <input type='button' className='bg-mds-blue text-white rounded-r-md px-4 cursor-pointer' value={textButtonSearch} onClick={searchPostulant} disabled={disabled} />
                         </div>
                         <p className='text-red-500 text-sm'>{messageNoFound}</p>
                         {errors?.nrodoc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
@@ -238,8 +301,10 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                           onChangeCapture={() => {
                             if (!getValues('school')) {
                               register('nameschool', { required: true })
+                              setClassNameSchool('block')
                             } else {
                               register('nameschool', { required: false })
+                              setClassNameSchool('hidden')
                             }
                           }}
                           {...register('school')}
@@ -248,7 +313,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                       </div>
                       <input
                         type='text'
-                        className='input-text'
+                        className={`input-text ${classNameSchool}`}
                         {...register('nameschool')}
                       />
                       {errors?.nameschool?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
@@ -260,13 +325,23 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                         <input
                           id='reschedule'
                           type='checkbox'
+                          onChangeCapture={() => {
+                            if (!getValues('reschedule')) {
+                              register('rescheduledate', { required: true })
+                              setClassNameReschedule('block')
+                              setValue('rescheduledate', new Date().toISOString().split('T')[0])
+                            } else {
+                              register('rescheduledate', { required: false })
+                              setClassNameReschedule('hidden')
+                            }
+                          }}
                           {...register('reschedule')}
                         />
                         <label htmlFor='reschedule'>¿Reprogramado?</label>
                       </div>
                       <input
                         type='date'
-                        className='input-text'
+                        className={`input-text ${classNameReschedule}`}
                         defaultValue={new Date().toISOString().split('T')[0]}
                         {...register('rescheduledate')}
                       />
@@ -294,9 +369,13 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit }) => {
                 type='button'
                 onClick={showModal}
               >
-                Close
+                Regresar
               </button>
-              <input type='submit' value='Guardar' className='btn-blue-dark' />
+              {
+              textTitle === 'Actualizar cita'
+                ? <><button type='button' className='btn-green-dark' onClick={handleConfirmed}>Confirmar</button><input type='submit' value='Actualizar' className='btn-blue-dark' /><button className='btn-red-dark' type='button' onClick={handleCanceled}>Cancelar</button></>
+                : <input type='submit' value='Guardar' className='btn-blue-dark' />
+              }
             </div>
           </form>
 
