@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { postRequest } from '../../services/services'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
-const RecordForm = ({ token, records, campus }) => {
+const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOpc }) => {
   const {
     register,
     handleSubmit,
@@ -23,6 +23,23 @@ const RecordForm = ({ token, records, campus }) => {
   const [textButtonSave, setTextButtonSave] = useState('Guardar')
   const navigate = useNavigate()
   const txtNroDoc = useRef()
+
+  const showPostulantAppointment = () => {
+    if (appoinmentOpc) {
+      console.log('Mostrar datos de la cita del postulante')
+      console.log(postulantAppointment)
+      txtNroDoc.current.value = postulantAppointment.postulant.nrodoc
+      setValue('name', postulantAppointment.postulant.lastname + ' ' + postulantAppointment.postulant.name)
+      setValue('id', postulantAppointment.postulant.id)
+      setValue('typelic', postulantAppointment.typelic)
+      setValue('typeproc', postulantAppointment.typeproc)
+    }
+  }
+
+  useEffect(() => {
+    showPostulantAppointment()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appoinmentOpc, postulantAppointment])
 
   const onSubmit = async data => {
     setTextButtonSave('Verificando...')
@@ -46,6 +63,7 @@ const RecordForm = ({ token, records, campus }) => {
       })
       .catch(e => {
         console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
       })
     setTextButtonSave('Buscar')
@@ -70,6 +88,7 @@ const RecordForm = ({ token, records, campus }) => {
       setValue('name', postulant[0].lastname + ' ' + postulant[0].name)
       setValue('id', postulant[0].id)
       setMessageNoFound('')
+      console.log(postulant)
     } else {
       setMessageNoFound('No se encontraron registros')
       handleCancel()
@@ -126,7 +145,7 @@ const RecordForm = ({ token, records, campus }) => {
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
             <div className='flex flex-col mb-3'>
               <span className='text-sm font-medium text-gray-700'>
-                Tipo de procedimiento
+                Tipo de licencia
               </span>
               <select
                 className='input-select'
@@ -152,7 +171,7 @@ const RecordForm = ({ token, records, campus }) => {
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
             <div className='flex flex-col mb-3'>
               <span className='text-sm font-medium text-gray-700'>
-                Tipo de licencia
+                Tipo de procedimiento
               </span>
               <select
                 className='input-select'

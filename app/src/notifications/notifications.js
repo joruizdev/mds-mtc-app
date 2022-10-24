@@ -49,3 +49,19 @@ export const notificationError = (text = 'Ocurrió un error, por favor intentelo
     cancelButtonText: 'Entendido'
   })
 }
+
+export const notificationExpiedSesion = async () => {
+  const MySwal = withReactContent(Swal)
+  MySwal.fire({
+    customClass: {
+      confirmButton: 'btn-blue-dark'
+    },
+    buttonsStyling: false,
+    title: 'Su sesión ha expidado',
+    text: 'Por favor inicie sesión nuevamente',
+    position: 'center',
+    icon: 'info',
+    confirmButtonText: 'Iniciar sesión',
+    showConfirmButton: true
+  })
+}

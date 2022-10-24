@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import imgNoFound from '../aseets/no-found.webp'
 import Spinner from '../components/spinner'
 import { notificationError } from '../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
   const [stopwatch, setStopwatch] = useState([])
@@ -16,6 +17,7 @@ const Home = () => {
   const [counter, setCounter] = useState(0)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [pending, setPending] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedSystemAppUser')
@@ -57,8 +59,9 @@ const Home = () => {
           setPending(false)
         })
         .catch((e) => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
           notificationError()
-          console.error(e)
         })
     }
   }

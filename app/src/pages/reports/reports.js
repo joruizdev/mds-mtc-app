@@ -4,6 +4,7 @@ import ExportToExcel from '../../components/exportToExcel'
 import { postRequest } from '../../services/services'
 import Spinner from '../../components/spinner'
 import { notificationError } from '../../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const Reports = () => {
   const [pending, setPending] = useState(true)
@@ -15,6 +16,7 @@ const Reports = () => {
   const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [newRecords, setNewRecords] = useState([])
   const [query, setQuery] = useState('')
+  const navigate = useNavigate()
 
   // eslint-disable-next-line no-unused-vars
   const search = data => {
@@ -70,8 +72,9 @@ const Reports = () => {
             setNewRecords(newRecords => newRecords.concat(record))
           })
           campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
-        }).catch(error => {
-          console.error(error)
+        }).catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
           notificationError()
         })
     }

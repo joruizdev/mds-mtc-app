@@ -10,6 +10,7 @@ import User from './pages/user/user'
 import Reports from './pages/reports/reports'
 import Voucher from './pages/voucher/createVoucher'
 import Appointment from './pages/appointment/appointment'
+import SessionExpired from './pages/session-expired/sessionExpired'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -42,6 +43,7 @@ const App = () => {
             <Route path='/appointment' element={<Appointment />} />
             <Route path='/voucher' element={<Voucher />} />
             <Route path='/user' element={<User />} />
+            <Route path='/session-expired' element={<SessionExpired />} />
             <Route path='*'>No found</Route>
           </Routes>
           </>

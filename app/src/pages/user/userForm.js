@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest, putRequestChangePassword } from '../../services/services'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const UserForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo usuario')
@@ -11,6 +12,7 @@ const UserForm = ({ token, reload, data }) => {
   const [textButtonChangePassword, setTextButtonChangePassword] = useState('Cambiar password')
   const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
   const txtPassword = useRef()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -73,8 +75,9 @@ const UserForm = ({ token, reload, data }) => {
         notificationSuccess('Registro guardado satisfactoriamente')
       })
       .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
-        console.error(e)
       })
     setTextButtonSave('Guardar')
   }
@@ -87,9 +90,10 @@ const UserForm = ({ token, reload, data }) => {
         handleCancel()
         reload()
       })
-      .catch(error => {
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
-        console.error(error)
       })
     setTextButtonUpdate('Actualizar')
   }
@@ -127,9 +131,10 @@ const UserForm = ({ token, reload, data }) => {
           reload()
           handleCancel()
         })
-        .catch(error => {
+        .catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
           notificationError()
-          console.log(error)
         })
     }
   }

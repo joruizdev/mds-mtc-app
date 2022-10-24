@@ -5,6 +5,7 @@ import ButtonStopwatch from './buttonStopwatch'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import iconAlarm from '../aseets/icon-alarm.gif'
+import { notificationError } from '../notifications/notifications'
 
 function Stopwatch ({
   id, postulant, typelic, date, timestart, timeend, timeclose, initiated, closed, canceled, order, click, typeuser, token, campus
@@ -36,7 +37,6 @@ function Stopwatch ({
   const [newTimeStart, setNewTimeStart] = useState(new Date(timestart))
   const [newTimeEnd, setNewTimeEnd] = useState(new Date(timeend))
   const [newTimeClose, setNewTimeClose] = useState(new Date(timeclose))
-  // const [token, setToken] = useState(null)
 
   const [newInitiated, setNewInitiated] = useState(initiated)
   const [newClosed, setNewClosed] = useState(closed)
@@ -87,6 +87,7 @@ function Stopwatch ({
       }
       await putRequest('records', newData, token)
         .then(data => {
+          console.log(data)
           setNewTimeStart(new Date())
           setNewInitiated(true)
           setNewTimeEnd(newTime)
@@ -96,19 +97,17 @@ function Stopwatch ({
           setClassOrder('icon-start')
           start()
         })
-        .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
+        .catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return notificationError('Sesión expidada, por favor cierre sesión e inicie nuevamente')
+          notificationError()
+        })
     }
   }
 
   const handleClose = async () => {
     if (!newClosed && newInitiated) {
       const date = new Date()
-      setBtnCloseClassName('btn-disabled')
-      setBtnResetClassName('btn-disabled')
-      setClassOrder('icon-close')
-      setNewTimeClose(date)
-      setNewClosed(true)
-
       const newdata = {
         ...data,
         timeclose: new Date(date).toISOString(),
@@ -117,9 +116,18 @@ function Stopwatch ({
       await putRequest('records', newdata, token)
         .then(data => {
           console.log(data)
+          setBtnCloseClassName('btn-disabled')
+          setBtnResetClassName('btn-disabled')
+          setClassOrder('icon-close')
+          setNewTimeClose(date)
+          setNewClosed(true)
           pause()
         })
-        .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
+        .catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return notificationError('Sesión expidada, por favor cierre sesión e inicie nuevamente')
+          notificationError()
+        })
     }
   }
 
@@ -152,21 +160,14 @@ function Stopwatch ({
               setNewTimeEnd(newTime)
               reset()
             })
-            .catch(error => messageAlert(`Ocurrio un error ${error}`, 'error'))
+            .catch(e => {
+              console.log(e)
+              if (e.response.data.error === 'token expired') return notificationError('Sesión expidada, por favor cierre sesión e inicie nuevamente')
+              notificationError()
+            })
         }
       })
     }
-  }
-
-  const messageAlert = (text, icon) => {
-    const MySwal = withReactContent(Swal)
-    MySwal.fire({
-      text,
-      position: 'top-end',
-      icon,
-      showConfirmButton: false,
-      timer: 1500
-    })
   }
 
   return (

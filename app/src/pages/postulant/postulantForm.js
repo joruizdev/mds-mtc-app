@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { postRequest, putRequest } from '../../services/services'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const PostulantForm = ({ token, reload, data }) => {
   const [titleForm, setTitleForm] = useState('Registrar nuevo postulante')
   const [firstLoad, setFirstLoad] = useState(false)
   const [textButtonSave, setTextButtonSave] = useState('Guardar')
   const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
+  const navigate = useNavigate()
 
   const {
     register,
@@ -70,6 +72,7 @@ const PostulantForm = ({ token, reload, data }) => {
       })
       .catch(e => {
         console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
       })
     await setTextButtonSave('Guardar')
@@ -84,6 +87,8 @@ const PostulantForm = ({ token, reload, data }) => {
         notificationSuccess('Registro actualizado satisfactoriamente')
       })
       .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
       })
     await setTextButtonUpdate('Actualizar')

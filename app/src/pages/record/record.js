@@ -6,6 +6,7 @@ import RecordForm from './recordForm'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Spinner from '../../components/spinner'
+import { useNavigate } from 'react-router-dom'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const Record = () => {
@@ -17,6 +18,9 @@ const Record = () => {
   const [pending, setPending] = useState(true)
   const [appointments, setAppointments] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
+  const [postulantAppointment, setPostulantAppointment] = useState([])
+  const [appoinmentOpc, setAppointmentOpc] = useState(false)
 
   const [query, setQuery] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -65,6 +69,7 @@ const Record = () => {
           })
           .catch(e => {
             console.log(e)
+            if (e.response.data.error === 'token expired') return navigate('/session-expired')
             notificationError()
           })
       }
@@ -91,8 +96,10 @@ const Record = () => {
       .then(response => {
         setAppointments(appointments => response.filter(item => item.confirmed))
       })
-      .catch(error => {
-        console.error(error)
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
+        notificationError()
       })
   }
 
@@ -114,15 +121,20 @@ const Record = () => {
           setPending(false)
         })
         .catch(e => {
-          notificationError()
           console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
+          notificationError()
         }
         )
     }
   }
 
-  const handleAttended = () => {
-
+  const handleAttended = (e, row) => {
+    e.preventDefault()
+    setPostulantAppointment([])
+    setPostulantAppointment(row)
+    setAppointmentOpc(true)
+    setShowModal(false)
   }
 
   const columnsAppointmentConfirmed = [
@@ -223,33 +235,36 @@ const Record = () => {
     }
   ]
 
-  const handleShowModal = () => {
-    setShowModal(true)
-  }
-
   return (
     <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
       <div className='flex justify-end'>
-        <button className='btn-yellow' onClick={handleShowModal}>Mostrar citas confirmadas</button>
+        <button className='btn-yellow' onClick={() => setShowModal(true)}>Mostrar citas confirmadas</button>
       </div>
       {
         showModal
           ? <div className='fixed z-50 top-0 left-0 w-full h-screen bg-stone-500 bg-opacity-60'>
-            <div className='container mx-auto flex justify-center items-center h-full'>
-              <div className='container mx-auto'>
-                <DataTable
-                  columns={columnsAppointmentConfirmed}
-                  data={appointments}
-                  pagination
-                  highlightOnHover
-                />
+              <div className='container mx-auto flex justify-center items-center h-full'>
+                <div className='container mx-auto bg-white p-10 rounded-lg'>
+                  <div className='flex justify-end pb-10'>
+                    <button className='text-xl' onClick={() => setShowModal(false)}>
+                      <span className='text-stone-500 h-6 w-6 text-5xl block outline-none focus:outline-none'>×</span>
+                    </button>
+                  </div>
+                  <DataTable
+                    title={`Lista de citas confirmadas del día ${new Date().toLocaleDateString()}`}
+                    columns={columnsAppointmentConfirmed}
+                    data={appointments}
+                    pagination
+                    highlightOnHover
+                  />
+                  <div className='pt-10'><button className='btn-red-dark' onClick={() => setShowModal(false)}>Cancelar</button></div>
+                </div>
               </div>
-            </div>
             </div>
           : ''
       }
 
-      <RecordForm token={token} records={records} campus={campus} />
+      <RecordForm token={token} records={records} campus={campus} postulantAppointment={postulantAppointment} appoinmentOpc={appoinmentOpc} />
       <div className='py-10 relative'>
         <div className='flex flex-col z-10 gap-4 mb-3 sm:flex-row md:flex-row lg:flex-row xl:flex-row lg:w-96 xl:w-96 lg:absolute xl:absolute lg:right-0 xl:right-0'>
           <input

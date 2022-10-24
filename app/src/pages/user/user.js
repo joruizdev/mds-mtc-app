@@ -1,10 +1,10 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { getRequest } from '../../services/services'
 import UserForm from './userForm'
 import Spinner from '../../components/spinner'
-import { messageAlert, notificationError, notificationSuccess } from '../../notifications/notifications'
+import { notificationError } from '../../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const User = () => {
   const [token, setToken] = useState(null)
@@ -12,6 +12,7 @@ const User = () => {
   const [reload, setReload] = useState(false)
   const [dataUser, setDataUser] = useState()
   const [pending, setPending] = useState(true)
+  const navigate = useNavigate()
 
   const [query, setQuery] = useState('')
 
@@ -37,6 +38,7 @@ const User = () => {
       })
       .catch(e => {
         console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
       })
   }
@@ -44,6 +46,7 @@ const User = () => {
   useEffect(() => {
     setReload(false)
     showUsers()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload])
 
   useEffect(() => {

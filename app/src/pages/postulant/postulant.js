@@ -5,6 +5,7 @@ import { getRequest } from '../../services/services'
 import PostulantForm from './postulantForm'
 import Spinner from '../../components/spinner'
 import { notificationError } from '../../notifications/notifications'
+import { useNavigate } from 'react-router-dom'
 
 const Postulant = () => {
   const [pending, setPending] = useState(true)
@@ -12,6 +13,7 @@ const Postulant = () => {
   const [postulants, setPostulants] = useState([])
   const [reload, setReload] = useState(false)
   const [dataPostulant, setDataPostulant] = useState()
+  const navigate = useNavigate()
 
   const [query, setQuery] = useState('')
 
@@ -36,14 +38,16 @@ const Postulant = () => {
         setPending(false)
       })
       .catch(e => {
-        notificationError()
         console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
+        notificationError()
       })
   }
 
   useEffect(() => {
     setReload(false)
     showPostulants()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload])
 
   useEffect(() => {
