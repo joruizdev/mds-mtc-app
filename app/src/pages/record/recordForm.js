@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { postRequest } from '../../services/services'
+import { postRequest, putRequest } from '../../services/services'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
 
 const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOpc }) => {
@@ -33,6 +33,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
       setValue('id', postulantAppointment.postulant.id)
       setValue('typelic', postulantAppointment.typelic)
       setValue('typeproc', postulantAppointment.typeproc)
+      setValue('idappointment', postulantAppointment.id)
     }
   }
 
@@ -57,9 +58,21 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
     await postRequest('records', data, token)
       .then(response => {
         console.log(response)
-        notificationSuccess('Record registrado satisfactoriamente', 'success')
+        notificationSuccess('Record registrado satisfactoriamente')
+      })
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
+        notificationError()
+      })
+
+    postulantAppointment.attended = true
+    await putRequest('appointment', postulantAppointment, token)
+      .then(response => {
+        console.log(response)
         navigate('/')
         navigate(0)
+        notificationSuccess('Record registrado satisfactoriamente')
       })
       .catch(e => {
         console.log(e)
@@ -76,6 +89,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
     resetField('typeproc')
     resetField('observations')
     resetField('price')
+    resetField('idappointment')
   }
 
   const searchPostulant = async () => {
@@ -104,6 +118,10 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
           <input
             type='hidden'
             {...register('id')}
+          />
+          <input
+            type='hidden'
+            {...register('idappointment')}
           />
           <div className='col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3'>
             <div className='flex flex-col'>

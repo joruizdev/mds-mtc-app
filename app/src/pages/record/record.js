@@ -94,7 +94,7 @@ const Record = () => {
   const showAppointments = () => {
     getRequest('appointment')
       .then(response => {
-        setAppointments(appointments => response.filter(item => item.confirmed))
+        setAppointments(appointments => response.filter(item => item.confirmed && !item.attended))
       })
       .catch(e => {
         console.log(e)
