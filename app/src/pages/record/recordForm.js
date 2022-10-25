@@ -21,11 +21,13 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
   const [messageNoFound, setMessageNoFound] = useState('')
   const [textButtonSearch, setTextButtonSearch] = useState('Buscar')
   const [textButtonSave, setTextButtonSave] = useState('Guardar')
+  const [isAppointment, setIsAppointment] = useState(false)
   const navigate = useNavigate()
   const txtNroDoc = useRef()
 
   const showPostulantAppointment = () => {
     if (appoinmentOpc) {
+      setIsAppointment(true)
       console.log('Mostrar datos de la cita del postulante')
       console.log(postulantAppointment)
       txtNroDoc.current.value = postulantAppointment.postulant.nrodoc
@@ -44,21 +46,33 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
 
   const onSubmit = async data => {
     setTextButtonSave('Verificando...')
-    const nroDoc = txtNroDoc.current.value
-    const result = await records.filter(record => record.postulant.nrodoc === nroDoc.trim() && record.canceled === false)
+    // const nroDoc = txtNroDoc.current.value
+    const newDate = new Date().toLocaleDateString().split('/').reverse().join('-')
+    const newData = {
+      dateStart: newDate,
+      dateEnd: newDate,
+      canceled: false,
+      postulantId: data.id
+    }
+    const result = await postRequest('records/verifyduplicated', newData, token)
     if (result.length > 0) {
-      setTextButtonSave('Buscar')
+      console.log(result)
+      setTextButtonSave('Guardar')
       return notificationError('Ya existe un record del postulante con fecha de hoy', 'error')
     }
 
     data.postulantId = data.id
     data.campus = campus
     data.order = records.length + 1
-    setTextButtonSave('Guardando...')
     await postRequest('records', data, token)
       .then(response => {
+        setTextButtonSave('Guardando...')
         console.log(response)
         notificationSuccess('Record registrado satisfactoriamente')
+        if (!isAppointment) {
+          /* navigate('/')
+          navigate(0) */
+        }
       })
       .catch(e => {
         console.log(e)
@@ -66,20 +80,23 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
         notificationError()
       })
 
-    postulantAppointment.attended = true
-    await putRequest('appointment', postulantAppointment, token)
-      .then(response => {
-        console.log(response)
-        navigate('/')
-        navigate(0)
-        notificationSuccess('Record registrado satisfactoriamente')
-      })
-      .catch(e => {
-        console.log(e)
-        if (e.response.data.error === 'token expired') return navigate('/session-expired')
-        notificationError()
-      })
-    setTextButtonSave('Buscar')
+    if (isAppointment) {
+      postulantAppointment.attended = true
+      await putRequest('appointment', postulantAppointment, token)
+        .then(response => {
+          setTextButtonSave('Actualizando...')
+          console.log(response)
+          navigate('/')
+          navigate(0)
+          notificationSuccess('Citas actualizadas correctamente')
+        })
+        .catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
+          notificationError()
+        })
+    }
+    setTextButtonSave('Guardar')
   }
 
   const handleCancel = () => {
@@ -94,6 +111,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
 
   const searchPostulant = async () => {
     setTextButtonSearch('Buscando...')
+    setIsAppointment(false)
     const nroDoc = txtNroDoc.current.value
     const data = { nrodoc: nroDoc.trim() }
     const postulant = await postRequest('postulants/bynrodoc', data, token)

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-indent */
-import { postRequest, putRequest, getRequest } from '../../services/services'
+import { postRequest, putRequest } from '../../services/services'
 import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import RecordForm from './recordForm'
@@ -91,16 +91,28 @@ const Record = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, reload, date])
 
-  const showAppointments = () => {
-    getRequest('appointment')
-      .then(response => {
-        setAppointments(appointments => response.filter(item => item.confirmed && !item.attended))
-      })
-      .catch(e => {
-        console.log(e)
-        if (e.response.data.error === 'token expired') return navigate('/session-expired')
-        notificationError()
-      })
+  const showAppointments = async () => {
+    setCount(count + 1)
+    if (token) {
+      const newDate = new Date().toLocaleDateString().split('/').reverse().join('-')
+      const data = {
+        dateStart: newDate,
+        dateEnd: newDate,
+        campus,
+        confirmed: true,
+        attended: false
+      }
+
+      await postRequest('appointment/bydate', data, token)
+        .then(response => {
+          setAppointments(response)
+        })
+        .catch(e => {
+          console.log(e)
+          if (e.response.data.error === 'token expired') return navigate('/session-expired')
+          notificationError()
+        })
+    }
   }
 
   const showRecords = async () => {
@@ -115,7 +127,7 @@ const Record = () => {
         dateEnd: newDate,
         campus
       }
-      postRequest('records/bydate', data, token)
+      await postRequest('records/bydate', data, token)
         .then(response => {
           setRecords(response)
           setPending(false)

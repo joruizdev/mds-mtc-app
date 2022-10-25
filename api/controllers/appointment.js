@@ -23,6 +23,33 @@ appointmentRouter.get('/:id', userExtractor, (req, res, next) => {
     .catch(err => next(err))
 })
 
+appointmentRouter.post('/bydate', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, confirmed, attended, campus } = req.body
+  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+
+  let queryFilter = {}
+
+  confirmed === undefined && attended === undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] })
+  confirmed !== undefined && attended === undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], confirmed })
+  confirmed !== undefined && attended !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], confirmed, attended })
+  confirmed === undefined && attended !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], attended })
+  confirmed === undefined && attended === undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus })
+  confirmed !== undefined && attended === undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, confirmed })
+  confirmed !== undefined && attended !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, confirmed, attended })
+  confirmed === undefined && attended !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, attended })
+
+  Appointment.find(queryFilter).populate('postulant', {
+    _id: 1,
+    name: 1,
+    lastname: 1,
+    typedoc: 1,
+    nrodoc: 1
+  }).then(postulant => {
+    return (postulant) ? res.json(postulant) : res.status(404).end()
+  })
+    .catch(err => next(err))
+})
+
 appointmentRouter.post('/', userExtractor, async (req, res) => {
   const { body } = req
   const {
