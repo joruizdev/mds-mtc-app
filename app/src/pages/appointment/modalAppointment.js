@@ -3,6 +3,9 @@ import { postRequest, putRequest } from '../../services/services'
 import { useForm } from 'react-hook-form'
 import { notificationError, notificationSuccess } from '../../notifications/notifications'
 import { hourAppointment } from './resources'
+import { useNavigate } from 'react-router-dom'
+import withReactContent from 'sweetalert2-react-content'
+import Swal from 'sweetalert2'
 
 const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, disabled }) => {
   const {
@@ -24,10 +27,16 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
   const [messageNoFound, setMessageNoFound] = useState('')
   const [classNameSchool, setClassNameSchool] = useState('hidden')
   const [classNameReschedule, setClassNameReschedule] = useState('hidden')
+  const [textButtonSave, setTextButtonSave] = useState('Reservar')
+  const [textButtonConfirm, setTextButtonConfirm] = useState('Confirmar')
+  const [textButtonCancel, setTextButtonCancel] = useState('Cancelar')
+  const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (eventEdit.length !== 0) {
-      console.log(eventEdit)
+      // console.log(eventEdit)
+      setValue('appointmentdate', new Date(eventEdit.appointmentdate).toISOString().split('T')[0])
       setValue('appointmenttime', eventEdit.appointmenttime)
       setValue('nrodoc', eventEdit.postulant.nrodoc)
       setValue('name', eventEdit.postulant.lastname + ' ' + eventEdit.postulant.name)
@@ -38,6 +47,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
       setValue('reschedule', eventEdit.reschedule)
       setValue('rescheduledate', eventEdit.reschedule ? new Date(eventEdit.rescheduledate).toISOString().split('T')[0] : '')
       setValue('observations', eventEdit.observations)
+      setValue('campus', eventEdit.campus)
 
       eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
       eventEdit.reschedule ? setClassNameReschedule('block') : setClassNameReschedule('hidden')
@@ -66,28 +76,58 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
   }
 
   const handleSave = async (data) => {
+    setTextButtonSave('Verificando...')
+
+    const dateAppointment = new Date(data.appointmentdate + ' ' + data.appointmenttime)
+    if (Date.parse(dateAppointment) < Date.parse(new Date())) {
+      setTextButtonSave('Reservar')
+      return notificationError('No se puede reservar una cita con fecha y hora menor que la fecha y hora actual')
+    }
+
+    const newDate = new Date().toLocaleDateString().split('/').reverse().join('-')
+
     const newData = {
       ...data,
+      dateStart: newDate,
+      dateEnd: newDate,
+      canceled: false,
       campus,
       appointmentdate: new Date(String(data.appointmentdate).split('/').reverse().join('-')).toISOString(),
       postulantId: data.id,
       rescheduledate: data.reschedule ? data.rescheduledate : ''
     }
 
+    const resultOne = await postRequest('appointment/verifyduplicatedtime', newData, token)
+    if (resultOne.length > 0) {
+      setTextButtonSave('Reservar')
+      return notificationError(`Ya existe una cita reservada en el horario de las ${data.appointmenttime} horas`, 'error')
+    }
+
+    const result = await postRequest('appointment/verifyduplicated', newData, token)
+    if (result.length > 0) {
+      setTextButtonSave('Reservar')
+      return notificationError('Ya existe una cita del postulante con fecha de hoy', 'error')
+    }
+
+    setTextButtonSave('Reservando...')
     await postRequest('appointment', newData, token)
       .then(response => {
         console.log(response)
         notificationSuccess('Reserva de cita exitosa')
         reload()
         showModal()
+        setTextButtonSave('Reservar')
       })
-      .catch(error => {
-        console.error(error)
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
+        setTextButtonSave('Reservar')
       })
   }
 
   const handleConfirmed = async () => {
+    setTextButtonConfirm('Confirmando...')
     const newData = {
       confirmed: true,
       id: eventEdit.appointmentId
@@ -99,32 +139,83 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
         notificationSuccess('Cita  confirmada')
         reload()
         showModal()
+        setTextButtonConfirm('Confirmar')
       })
-      .catch(error => {
-        console.error(error)
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
+        setTextButtonConfirm('Confirmar')
       })
   }
 
   const handleCanceled = async () => {
+    const MySwal = withReactContent(Swal)
+    setTextButtonCancel('Cancelando...')
+    MySwal.fire({
+      text: 'Por favor, indique el motivo por el cual desea cancelar la cita',
+      input: 'text',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Si, cancelar cita',
+      confirmButtonColor: '#2c70b6',
+      cancelButtonText: 'Regresar',
+      preConfirm: (reason) => {
+        if (reason.length > 0) {
+          return reason
+        } else {
+          Swal.showValidationMessage(
+            'Por favor indique el motivo'
+          )
+        }
+      }
+    }).then(async (result) => {
+      setTextButtonCancel('Cancelar')
+      if (result.isConfirmed) {
+        const newData = {
+          canceled: true,
+          id: eventEdit.appointmentId,
+          reason: result.value
+        }
+        await putRequest('appointment', newData, token)
+          .then(response => {
+            console.log(response)
+            notificationSuccess('Cita  cancelada')
+            reload()
+            showModal()
+            setTextButtonCancel('Cancelar')
+          })
+          .catch(e => {
+            console.log(e)
+            if (e.response.data.error === 'token expired') return navigate('/session-expired')
+            notificationError()
+            setTextButtonCancel('Cancelar')
+          })
+      }
+    })
+    /* setTextButtonCancel('Cancelando...')
     const newData = {
       canceled: true,
       id: eventEdit.appointmentId
-    }
-    await putRequest('appointment', newData, token)
+    } */
+    /* await putRequest('appointment', newData, token)
       .then(response => {
         console.log(response)
         notificationSuccess('Cita  cancelada')
         reload()
         showModal()
+        setTextButtonCancel('Cancelar')
       })
-      .catch(error => {
-        console.error(error)
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
-      })
+        setTextButtonCancel('Cancelar')
+      }) */
   }
 
   const handleUpdate = async (data) => {
+    setTextButtonUpdate('Actualizando...')
     const newData = {
       ...data,
       id: eventEdit.appointmentId,
@@ -136,10 +227,13 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
         notificationSuccess('Datos de la cita actualizada satisfactoriamente')
         reload()
         showModal()
+        setTextButtonUpdate('Actualizar')
       })
-      .catch(error => {
-        console.error(error)
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
         notificationError()
+        setTextButtonUpdate('Actualizar')
       })
   }
 
@@ -165,7 +259,10 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
             <div className='flex flex-col w-full'>
               <div className='relative p-5'>
 
+                <p className='pb-4 text-end'>{`Local: ${eventEdit.campus}`}</p>
+
                 <div className='grid grid-cols-12 gap-5'>
+
                   <div className='col-span-12 md:col-span-6'>
                     <div className='flex flex-col mb-3'>
                       <span>Fecha: </span>
@@ -373,8 +470,8 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
               </button>
               {
               textTitle === 'Actualizar cita'
-                ? <><button type='button' className='btn-green-dark' onClick={handleConfirmed}>Confirmar</button><input type='submit' value='Actualizar' className='btn-blue-dark' /><button className='btn-red-dark' type='button' onClick={handleCanceled}>Cancelar</button></>
-                : <input type='submit' value='Guardar' className='btn-blue-dark' />
+                ? <><button type='button' className='btn-green-dark' onClick={handleConfirmed}>{textButtonConfirm}</button><input type='submit' value={textButtonUpdate} className='btn-blue-dark' /><button className='btn-red-dark' type='button' onClick={handleCanceled}>{textButtonCancel}</button></>
+                : <input type='submit' value={textButtonSave} className='btn-blue-dark' />
               }
             </div>
           </form>

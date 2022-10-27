@@ -25,18 +25,18 @@ const Nav = ({ typeuser, click }) => {
         </button>
       </div>
       <div className='flex flex-col lg:flex-row gap-2 lg:gap-5'>
-        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/'>Inicio</Link></div>
-        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/postulant'>Postulante</Link></div>
-        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/record'>Record</Link></div>
-        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/reports'>Reportes</Link></div>
-        <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/appointment'>Citas</Link></div>
-        <div onClick={showMenu} className='hidden text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'>
+        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/'>Inicio</Link></div>
+        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/postulant'>Postulante</Link></div>
+        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/record'>Record</Link></div>
+        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/appointment'>Citas</Link></div>
+        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/reports'>Reportes</Link></div>
+        <div onClick={showMenu} className='hidden text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'>
           Comprobantes
         </div>
         {
-          typeuser.toLowerCase() === 'soporte' && <div onClick={showMenu} className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:py-0 lg:hover:text-mds-blue'><Link to='/user'>Usuario</Link></div>
+          typeuser.toLowerCase() === 'soporte' && <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2 '><Link to='/user'>Usuario</Link></div>
         }
-        <div className='text-md hover:text-mds-blue cursor-pointer mx-auto text-center py-5 lg:hidden'><button onClick={handleLogout}>Cerrar sesión</button></div>
+        <div className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:hidden'><button onClick={handleLogout}>Cerrar sesión</button></div>
       </div>
     </nav>
   )

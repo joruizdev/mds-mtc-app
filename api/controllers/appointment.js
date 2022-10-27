@@ -5,14 +5,14 @@ const User = require('../models/User')
 const userExtractor = require('../middleware/userExtractor')
 
 appointmentRouter.get('/', async (req, res) => {
-  const records = await Appointment.find({}).populate('postulant', {
+  const appointments = await Appointment.find({}).populate('postulant', {
     _id: 1,
     name: 1,
     lastname: 1,
     typedoc: 1,
     nrodoc: 1
   })
-  res.json(records)
+  res.json(appointments)
 })
 
 appointmentRouter.get('/:id', userExtractor, (req, res, next) => {
@@ -23,20 +23,70 @@ appointmentRouter.get('/:id', userExtractor, (req, res, next) => {
     .catch(err => next(err))
 })
 
-appointmentRouter.post('/bydate', userExtractor, async (req, res, next) => {
-  const { dateStart, dateEnd, confirmed, attended, campus } = req.body
+appointmentRouter.post('/filtercampus', userExtractor, async (req, res, next) => {
+  const { campus } = req.body
+
+  const queryFilter = String(campus).toLowerCase() === 'todos' ? {} : { campus }
+
+  Appointment.find(queryFilter).populate('postulant', {
+    _id: 1,
+    name: 1,
+    lastname: 1,
+    typedoc: 1,
+    nrodoc: 1
+  }).then(response => {
+    return (response) ? res.json(response) : res.status(404).end()
+  })
+    .catch(err => next(err))
+})
+
+appointmentRouter.post('/verifyduplicatedtime', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, canceled, campus, appointmenttime } = req.body
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
 
   let queryFilter = {}
 
-  confirmed === undefined && attended === undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }] })
-  confirmed !== undefined && attended === undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], confirmed })
-  confirmed !== undefined && attended !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], confirmed, attended })
-  confirmed === undefined && attended !== undefined && String(campus).toLowerCase() === 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], attended })
-  confirmed === undefined && attended === undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus })
-  confirmed !== undefined && attended === undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, confirmed })
-  confirmed !== undefined && attended !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, confirmed, attended })
-  confirmed === undefined && attended !== undefined && String(campus).toLowerCase() !== 'todos' && (queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, attended })
+  queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus, appointmenttime }
+
+  Appointment.find(queryFilter).populate('postulant', {
+    _id: 1,
+    name: 1,
+    lastname: 1,
+    typedoc: 1,
+    nrodoc: 1
+  }).then(response => {
+    return (response) ? res.json(response) : res.status(404).end()
+  })
+    .catch(err => next(err))
+})
+
+appointmentRouter.post('/verifyduplicated', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, canceled, postulantId, campus } = req.body
+  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+
+  let queryFilter = {}
+
+  queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus }
+
+  Appointment.find(queryFilter).populate('postulant', {
+    _id: 1,
+    name: 1,
+    lastname: 1,
+    typedoc: 1,
+    nrodoc: 1
+  }).then(response => {
+    const postulant = response.filter(item => item.postulant.id === postulantId)
+    return (postulant) ? res.json(postulant) : res.status(404).end()
+  })
+    .catch(err => next(err))
+})
+
+// Search by date, campus and canceled
+appointmentRouter.post('/bydate', userExtractor, async (req, res, next) => {
+  const { dateStart, dateEnd, campus, confirmed, attended, canceled } = req.body
+  const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
+
+  const queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], campus, confirmed, attended, canceled }
 
   Appointment.find(queryFilter).populate('postulant', {
     _id: 1,

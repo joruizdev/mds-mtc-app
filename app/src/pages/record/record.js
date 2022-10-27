@@ -100,7 +100,8 @@ const Record = () => {
         dateEnd: newDate,
         campus,
         confirmed: true,
-        attended: false
+        attended: false,
+        canceled: false
       }
 
       await postRequest('appointment/bydate', data, token)
@@ -136,8 +137,7 @@ const Record = () => {
           console.log(e)
           if (e.response.data.error === 'token expired') return navigate('/session-expired')
           notificationError()
-        }
-        )
+        })
     }
   }
 
@@ -256,10 +256,10 @@ const Record = () => {
         showModal
           ? <div className='fixed z-50 top-0 left-0 w-full h-screen bg-stone-500 bg-opacity-60'>
               <div className='container mx-auto flex justify-center items-center h-full'>
-                <div className='container mx-auto bg-white p-10 rounded-lg'>
-                  <div className='flex justify-end pb-10'>
+                <div className='container mx-auto bg-white p-10 rounded-lg relative'>
+                  <div className='flex justify-end px-4'>
                     <button className='text-xl' onClick={() => setShowModal(false)}>
-                      <span className='text-stone-500 h-6 w-6 text-5xl block outline-none focus:outline-none'>×</span>
+                      <span className='text-stone-500 h-6 w-6 text-5xl block outline-none focus:outline-none absolute z-[100]'>×</span>
                     </button>
                   </div>
                   <DataTable

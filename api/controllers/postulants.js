@@ -4,7 +4,7 @@ const User = require('../models/User')
 const userExtractor = require('../middleware/userExtractor')
 
 postulantsRouter.get('/', async (req, res) => {
-  const postulants = await Postulant.find({})
+  const postulants = await Postulant.find({}).sort({ dateregister: -1 })
   res.json(postulants)
 })
 

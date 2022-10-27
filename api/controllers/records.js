@@ -69,13 +69,11 @@ recordRouter.post('/bydate', userExtractor, async (req, res, next) => {
 
 recordRouter.post('/verifyduplicated', userExtractor, async (req, res, next) => {
   const { dateStart, dateEnd, canceled, postulantId } = req.body
-  console.log(req.body)
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
-  const ObjectId = require('mongoose').Types.ObjectId
 
   let queryFilter = {}
 
-  queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], postulant: ObjectId(postulantId), canceled }
+  queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled }
 
   Record.find(queryFilter).populate('postulant', {
     _id: 1,
@@ -83,7 +81,8 @@ recordRouter.post('/verifyduplicated', userExtractor, async (req, res, next) => 
     lastname: 1,
     typedoc: 1,
     nrodoc: 1
-  }).then(postulant => {
+  }).then(response => {
+    const postulant = response.filter(item => item.postulant.id === postulantId)
     return (postulant) ? res.json(postulant) : res.status(404).end()
   })
     .catch(err => next(err))

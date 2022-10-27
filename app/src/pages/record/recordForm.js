@@ -56,7 +56,6 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
     }
     const result = await postRequest('records/verifyduplicated', newData, token)
     if (result.length > 0) {
-      console.log(result)
       setTextButtonSave('Guardar')
       return notificationError('Ya existe un record del postulante con fecha de hoy', 'error')
     }
