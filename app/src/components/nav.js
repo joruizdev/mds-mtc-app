@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-closing-tag-location */
 import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -24,15 +25,21 @@ const Nav = ({ typeuser, click }) => {
           <span className='w-8 h-1 bg-mds-blue rounded-xl absolute rotate-45' />
         </button>
       </div>
-      <div className='flex flex-col lg:flex-row gap-2 lg:gap-5'>
+      <div className='flex flex-col lg:flex-row gap-2 lg:gap-1'>
         <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/'>Inicio</Link></div>
-        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/postulant'>Postulante</Link></div>
-        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/record'>Record</Link></div>
-        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/appointment'>Citas</Link></div>
-        <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/reports'>Reportes</Link></div>
-        <div onClick={showMenu} className='hidden text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'>
-          Comprobantes
-        </div>
+        {
+          typeuser.toLowerCase() === 'otros'
+            ? ''
+            : <>
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/postulant'>Postulante</Link></div>
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/record'>Record</Link></div>
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/appointment'>Citas</Link></div>
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/reports'>Reportes</Link></div>
+              <div onClick={showMenu} className='hidden text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'>
+                Comprobantes
+              </div>
+            </>
+        }
         {
           typeuser.toLowerCase() === 'soporte' && <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2 '><Link to='/user'>Usuario</Link></div>
         }

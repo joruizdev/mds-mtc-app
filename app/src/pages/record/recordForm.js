@@ -69,8 +69,8 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
         console.log(response)
         notificationSuccess('Record registrado satisfactoriamente')
         if (!isAppointment) {
-          /* navigate('/')
-          navigate(0) */
+          navigate('/')
+          // navigate(0)
         }
       })
       .catch(e => {
@@ -86,7 +86,6 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
           setTextButtonSave('Actualizando...')
           console.log(response)
           navigate('/')
-          navigate(0)
           notificationSuccess('Citas actualizadas correctamente')
         })
         .catch(e => {

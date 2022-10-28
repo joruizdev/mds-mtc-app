@@ -17,6 +17,11 @@ const Reports = () => {
   const [newRecords, setNewRecords] = useState([])
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
+  const [totalInitiated, setTotalInitiated] = useState()
+  const [recordsAttended, setRecordsAttended] = useState([])
+  const [recordsClosed, setRecordsClosed] = useState([])
+  const [recordsCanceled, setRecordsCanceled] = useState([])
+  const [dt, setDt] = useState([])
 
   // eslint-disable-next-line no-unused-vars
   const search = data => {
@@ -63,15 +68,20 @@ const Reports = () => {
               NroOrden: elem.order,
               TipoLic: elem.typelic,
               TipoProc: elem.typeproc,
-              HoraInicio: new Date(elem.timestart).toLocaleTimeString(),
-              HoraFinal: new Date(elem.timeend).toLocaleTimeString(),
-              HoraCierre: new Date(elem.timeclose).toLocaleTimeString(),
+              HoraInicio: elem.timestart !== null ? new Date(elem.timestart).toLocaleTimeString() : '--',
+              HoraFinal: elem.timeend !== null ? new Date(elem.timeend).toLocaleTimeString() : '--',
+              HoraCierre: elem.timeclose !== null ? new Date(elem.timeclose).toLocaleTimeString() : '--',
               CostoExamen: elem.price,
               Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : 'Iniciado'
             }
-            setNewRecords(newRecords => newRecords.concat(record))
+            setNewRecords(newRecords.concat(record))
           })
-          campus.toLowerCase() !== 'todos' && setNewRecords(newRecords.filter(elem => elem.campus === campus))
+
+          /* const sumall = newRecords.map(item => item.CostoExamen).reduce((prev, curr) => prev + curr, 0)
+          const dt = { Postulante: '', TipoDoc: '', NroDoc: '', Fecha: '', Local: '', NroOrden: '', TipoLic: '', TipoProc: '', HoraInicio: '', HoraFinal: '', HoraCierre: 'Total', CostoExamen: sumall, Estado: '' }
+          console.log(datarecord.concat(newRecords, dt)) */
+          // setNewRecords(item => item.concat(dt))
+          // footerInfo()
         }).catch(e => {
           console.log(e)
           if (e.response.data.error === 'token expired') return navigate('/session-expired')
@@ -79,6 +89,19 @@ const Reports = () => {
         })
     }
   }
+
+  useEffect(() => {
+    setRecordsAttended(records.filter(item => item.initiated && !item.closed))
+    setRecordsClosed(records.filter(item => item.closed))
+    setRecordsCanceled(records.filter(item => item.canceled))
+
+    const dataReords = records.filter(item => item.closed)
+    setTotalInitiated(dataReords.map(item => item.price).reduce((prev, curr) => prev + curr, 0))
+    const addRowRecords = { Postulante: '', TipoDoc: '', NroDoc: '', Fecha: '', Local: '', NroOrden: '', TipoLic: '', TipoProc: '', HoraInicio: '', HoraFinal: '', HoraCierre: 'Total', CostoExamen: totalInitiated, Estado: '' }
+    setDt(dt.concat(addRowRecords))
+    console.log(dt)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [records])
 
   const columns = [
     {
@@ -195,7 +218,7 @@ const Reports = () => {
             placeholder='Buscar'
             onChange={(e) => setQuery(e.target.value)}
           />
-          <ExportToExcel data={newRecords} fileName='Lista de records' />
+          <ExportToExcel data={dt} fileName='Lista de records' />
         </div>
         <div className='py-28 md:py-14 lg:py-0'>
           <DataTable
@@ -208,6 +231,15 @@ const Reports = () => {
             progressComponent={<Spinner />}
             conditionalRowStyles={conditionalRowStyles}
           />
+          <div>
+            <p className='pb-2 text-xl'>Leyenda</p>
+            <div className='flex gap-10'>
+              <p>{`En proceso: ${recordsAttended.length}`}</p>
+              <p>{`Atendidos: ${recordsClosed.length}`}</p>
+              <p>{`Cancelados: ${recordsCanceled.length}`}</p>
+              <p>{`Total de ingresos = S/. ${totalInitiated}.00`}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
