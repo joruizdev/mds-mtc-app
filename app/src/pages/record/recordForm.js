@@ -36,6 +36,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
       setValue('typelic', postulantAppointment.typelic)
       setValue('typeproc', postulantAppointment.typeproc)
       setValue('idappointment', postulantAppointment.id)
+      setValue('price', postulantAppointment.price)
     }
   }
 

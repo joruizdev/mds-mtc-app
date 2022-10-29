@@ -41,7 +41,7 @@ const CreateVoucher = () => {
   const showRecords = async () => {
     setPending(true)
     if (token) {
-      const data = { campus, canceled: false, invoiced: false }
+      const data = { campus, invoiced: false }
       await postRequest('records/voucher', data, token)
         .then(response => {
           setRecords(response)

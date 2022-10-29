@@ -24,12 +24,12 @@ recordRouter.get('/:id', userExtractor, (req, res, next) => {
 })
 
 recordRouter.post('/voucher', userExtractor, async (req, res, next) => {
-  const { campus, canceled, invoiced } = req.body
+  const { campus, invoiced } = req.body
 
   let queryFilter = {}
 
-  String(campus).toLowerCase() === 'todos' && (queryFilter = { canceled, invoiced })
-  String(campus).toLowerCase() !== 'todos' && (queryFilter = { canceled, invoiced, campus })
+  String(campus).toLowerCase() === 'todos' && (queryFilter = { invoiced })
+  String(campus).toLowerCase() !== 'todos' && (queryFilter = { invoiced, campus })
 
   Record.find(queryFilter).populate('postulant', {
     _id: 1,

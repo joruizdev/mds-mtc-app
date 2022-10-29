@@ -47,6 +47,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
       setValue('reschedule', eventEdit.reschedule)
       setValue('rescheduledate', eventEdit.reschedule ? new Date(eventEdit.rescheduledate).toISOString().split('T')[0] : '')
       setValue('observations', eventEdit.observations)
+      setValue('price', eventEdit.price)
       setValue('campus', eventEdit.campus)
 
       eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
@@ -259,12 +260,12 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
             <div className='flex flex-col w-full'>
               <div className='relative p-5'>
 
-                <p className='pb-4 text-end'>{`Local: ${eventEdit.campus}`}</p>
+                <p className='hidden pb-4 text-end'>{`Local: ${eventEdit.campus}`}</p>
 
                 <div className='grid grid-cols-12 gap-5'>
 
                   <div className='col-span-12 md:col-span-6'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <span>Fecha: </span>
                       <input
                         type='date'
@@ -280,7 +281,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                   </div>
 
                   <div className='col-span-12 md:col-span-6'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <span>Hora: </span>
                       <select
                         className='input-select'
@@ -302,7 +303,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       <span className='text-sm font-medium text-gray-700 mb-1'>
                         Buscar postulante
                       </span>
-                      <div className='flex flex-col mb-3'>
+                      <div className='flex flex-col mb-1'>
                         <div className='flex justify-between rounded-md p-0 py-0 border-0 w-full mb-1'>
                           <input
                             type='text'
@@ -325,7 +326,7 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                   />
 
                   <div className='col-span-12 md:col-span-6'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <span className='text-sm font-medium text-gray-700'>
                         Apellidos y nombres
                       </span>
@@ -340,11 +341,12 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       {errors?.name?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                     </div>
                   </div>
+
                   <div className='col-span-12 md:col-span-6'>
                     <div>
-                      <div className='flex flex-col mb-3'>
+                      <div className='flex flex-col mb-1'>
                         <span className='text-sm font-medium text-gray-700'>
-                          Tipo de procedimiento
+                          Tipo de licencia
                         </span>
                         <select
                           className='input-select'
@@ -367,11 +369,12 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       {errors?.typelic?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                     </div>
                   </div>
+
                   <div className='col-span-12 md:col-span-6'>
                     <div>
-                      <div className='flex flex-col mb-3'>
+                      <div className='flex flex-col mb-1'>
                         <span className='text-sm font-medium text-gray-700'>
-                          Tipo de licencia
+                          Tipo de procedimiento
                         </span>
                         <select
                           className='input-select'
@@ -388,8 +391,9 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       {errors?.typeproc?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                     </div>
                   </div>
+
                   <div className='col-span-12 md:col-span-6'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <div className='flex gap-4'>
                         <input
                           id='school'
@@ -416,8 +420,9 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       {errors?.nameschool?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                     </div>
                   </div>
+
                   <div className='col-span-12 md:col-span-6'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <div className='flex gap-4'>
                         <input
                           id='reschedule'
@@ -444,13 +449,33 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       />
                     </div>
                   </div>
+
+                  <div className='col-span-12 md:col-span-6'>
+                    <div className='flex flex-col mb-1'>
+                      <span className='text-sm font-medium text-gray-700'>
+                        Costo de examen
+                      </span>
+                      <div className='flex items-center gap-2'>
+                        <span>S/.</span>
+                        <input
+                          type='text'
+                          className='input-text text-end'
+                          {...register('price', {
+                            required: true
+                          })}
+                        />
+                      </div>
+                      {errors?.price?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
+                    </div>
+                  </div>
+
                   <div className='col-span-12'>
-                    <div className='flex flex-col mb-3'>
+                    <div className='flex flex-col mb-1'>
                       <span className='text-sm font-medium text-gray-700'>
                         Observaciones
                       </span>
                       <textarea
-                        rows='5'
+                        rows='2'
                         className='input-text'
                         {...register('observations')}
                       />

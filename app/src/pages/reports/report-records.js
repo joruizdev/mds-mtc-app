@@ -6,7 +6,7 @@ import Spinner from '../../components/spinner'
 import { notificationError } from '../../notifications/notifications'
 import { useNavigate } from 'react-router-dom'
 
-const Reports = () => {
+const ReportRecords = () => {
   const [pending, setPending] = useState(true)
   const [token, setToken] = useState()
   const [reload, setReload] = useState()
@@ -21,7 +21,7 @@ const Reports = () => {
   const [recordsAttended, setRecordsAttended] = useState([])
   const [recordsClosed, setRecordsClosed] = useState([])
   const [recordsCanceled, setRecordsCanceled] = useState([])
-  const [dt, setDt] = useState([])
+  const [recordsNotInitiated, setRecordsNotInitiated] = useState([])
 
   // eslint-disable-next-line no-unused-vars
   const search = data => {
@@ -72,9 +72,9 @@ const Reports = () => {
               HoraFinal: elem.timeend !== null ? new Date(elem.timeend).toLocaleTimeString() : '--',
               HoraCierre: elem.timeclose !== null ? new Date(elem.timeclose).toLocaleTimeString() : '--',
               CostoExamen: elem.price,
-              Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : 'Iniciado'
+              Estado: (elem.canceled) ? 'Cancelado' : (elem.closed) ? 'Cerrado' : (elem.initiated) ? 'Iniciado' : 'No iniciado'
             }
-            setNewRecords(newRecords.concat(record))
+            setNewRecords(newRecords => newRecords.concat(record))
           })
 
           /* const sumall = newRecords.map(item => item.CostoExamen).reduce((prev, curr) => prev + curr, 0)
@@ -91,17 +91,17 @@ const Reports = () => {
   }
 
   useEffect(() => {
-    setRecordsAttended(records.filter(item => item.initiated && !item.closed))
+    setRecordsAttended(records.filter(item => item.initiated && !item.closed && !item.canceled))
     setRecordsClosed(records.filter(item => item.closed))
     setRecordsCanceled(records.filter(item => item.canceled))
-
-    const dataReords = records.filter(item => item.closed)
-    setTotalInitiated(dataReords.map(item => item.price).reduce((prev, curr) => prev + curr, 0))
-    const addRowRecords = { Postulante: '', TipoDoc: '', NroDoc: '', Fecha: '', Local: '', NroOrden: '', TipoLic: '', TipoProc: '', HoraInicio: '', HoraFinal: '', HoraCierre: 'Total', CostoExamen: totalInitiated, Estado: '' }
-    setDt(dt.concat(addRowRecords))
-    console.log(dt)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [records])
+    setRecordsNotInitiated(records.filter(item => !item.initiated))
+    setTotalInitiated(records.map(item => item.price).reduce((prev, curr) => prev + curr, 0))
+    if (newRecords.length > 0) {
+      const addRowRecords = { Postulante: '', TipoDoc: '', NroDoc: '', Fecha: '', Local: '', NroOrden: '', TipoLic: '', TipoProc: '', HoraInicio: '', HoraFinal: '', HoraCierre: 'Total', CostoExamen: totalInitiated, Estado: '' }
+      setNewRecords(newRecords.concat(addRowRecords))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [records, totalInitiated])
 
   const columns = [
     {
@@ -218,7 +218,7 @@ const Reports = () => {
             placeholder='Buscar'
             onChange={(e) => setQuery(e.target.value)}
           />
-          <ExportToExcel data={dt} fileName='Lista de records' />
+          <ExportToExcel data={newRecords} fileName='Lista de records' />
         </div>
         <div className='py-28 md:py-14 lg:py-0'>
           <DataTable
@@ -232,10 +232,10 @@ const Reports = () => {
             conditionalRowStyles={conditionalRowStyles}
           />
           <div>
-            <p className='pb-2 text-xl'>Leyenda</p>
             <div className='flex gap-10'>
+              <p>{`En espera: ${recordsNotInitiated.length}`}</p>
               <p>{`En proceso: ${recordsAttended.length}`}</p>
-              <p>{`Atendidos: ${recordsClosed.length}`}</p>
+              <p>{`Terminado: ${recordsClosed.length}`}</p>
               <p>{`Cancelados: ${recordsCanceled.length}`}</p>
               <p>{`Total de ingresos = S/. ${totalInitiated}.00`}</p>
             </div>
@@ -245,4 +245,4 @@ const Reports = () => {
     </div>
   )
 }
-export default Reports
+export default ReportRecords

@@ -250,7 +250,18 @@ const Record = () => {
   return (
     <div className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
       <div className='flex justify-end'>
-        <button className='btn-yellow' onClick={() => setShowModal(true)}>Mostrar citas confirmadas</button>
+        <div className='relative inline-flex'>
+          <button className='btn-yellow' onClick={() => setShowModal(true)}>Mostrar citas confirmadas</button>
+          {
+          (appointments.length > 0)
+            ? <span className='flex absolute h-5 w-5 top-0 right-0 -mt-1 -mr-1'>
+              <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75' />
+              <span className='relative inline-flex rounded-full h-5 w-5 bg-green-500' />
+              <span className='absolute left-2 text-white'>{appointments.length}</span>
+              </span>
+            : ''
+          }
+        </div>
       </div>
       {
         showModal

@@ -26,7 +26,8 @@ const appointmentSchema = new Schema({
   canceled: Boolean,
   reason: String,
   observations: String,
-  attended: Boolean
+  attended: Boolean,
+  price: Number
 
 })
 

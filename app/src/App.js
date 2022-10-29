@@ -7,10 +7,12 @@ import Postulant from './pages/postulant/postulant'
 import Login from './pages/login/login'
 import Record from './pages/record/record'
 import User from './pages/user/user'
-import Reports from './pages/reports/reports'
+import ReportRecords from './pages/reports/report-records'
+import ReportAppointments from './pages/reports/report-appointments'
 import Voucher from './pages/voucher/createVoucher'
 import Appointment from './pages/appointment/appointment'
 import SessionExpired from './pages/session-expired/sessionExpired'
+import MenuReports from './pages/reports/menu-reports/menuResports'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -39,7 +41,9 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/postulant' element={<Postulant />} />
             <Route path='/record' element={<Record />} />
-            <Route path='/reports' element={<Reports />} />
+            <Route path='/menu-reports' element={<MenuReports />} />
+            <Route path='/report-records' element={<ReportRecords />} />
+            <Route path='/report-appointments' element={<ReportAppointments />} />
             <Route path='/appointment' element={<Appointment />} />
             <Route path='/voucher' element={<Voucher />} />
             <Route path='/user' element={<User />} />

@@ -113,6 +113,7 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     reschedule = false,
     rescheduledate = '',
     observations,
+    price,
     postulantId
   } = body
 
@@ -136,6 +137,7 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     canceled: false,
     reason: '',
     observations,
+    price,
     attended: false,
     postulant: postulantId,
     user: userId
@@ -174,7 +176,8 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     confirmed,
     canceled,
     reason,
-    attended
+    attended,
+    price
   } = req.body
 
   const newAppointmentInfo = {
@@ -191,7 +194,8 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     confirmed,
     canceled,
     reason,
-    attended
+    attended,
+    price
   }
 
   Appointment.findByIdAndUpdate(id, newAppointmentInfo, { new: true })
