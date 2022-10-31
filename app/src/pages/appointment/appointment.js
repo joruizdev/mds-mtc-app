@@ -14,6 +14,7 @@ const Appointment = () => {
   const [token, setToken] = useState(null)
   const [reload, setReload] = useState(false)
   const [campus, setCampus] = useState('')
+  const [userId, setUserId] = useState(null)
   const [event, setEvent] = useState([])
   const [eventEdit, setEventEdit] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -70,6 +71,7 @@ const Appointment = () => {
       const user = JSON.parse(loggedUserJSON)
       setToken(user.token)
       setCampus(user.campus)
+      setUserId(user.id)
     }
   }, [token, reload])
 
@@ -98,6 +100,7 @@ const Appointment = () => {
         ? <ModalAppointment
             show={handleShowModal}
             token={token}
+            user={userId}
             event={event}
             reload={handleReload}
             campus={campus}

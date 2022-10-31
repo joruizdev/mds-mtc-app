@@ -9,10 +9,11 @@ import Record from './pages/record/record'
 import User from './pages/user/user'
 import ReportRecords from './pages/reports/report-records'
 import ReportAppointments from './pages/reports/report-appointments'
-import Voucher from './pages/voucher/createVoucher'
+// import Voucher from './pages/voucher/createVoucher'
 import Appointment from './pages/appointment/appointment'
 import SessionExpired from './pages/session-expired/sessionExpired'
 import MenuReports from './pages/reports/menu-reports/menuResports'
+import NotFound from './pages/not-found/notFound'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -45,10 +46,10 @@ const App = () => {
             <Route path='/report-records' element={<ReportRecords />} />
             <Route path='/report-appointments' element={<ReportAppointments />} />
             <Route path='/appointment' element={<Appointment />} />
-            <Route path='/voucher' element={<Voucher />} />
+            {/* <Route path='/voucher' element={<Voucher />} /> */}
             <Route path='/user' element={<User />} />
             <Route path='/session-expired' element={<SessionExpired />} />
-            <Route path='*'>No found</Route>
+            <Route path='*' element={<NotFound />} />
           </Routes>
           </>
       }

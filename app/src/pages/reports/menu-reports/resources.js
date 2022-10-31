@@ -10,5 +10,11 @@ export const menu = [
     footer: 'Ir a Citas',
     img: 'https://www.svgrepo.com/show/394102/date.svg',
     link: '/report-appointments'
+  },
+  {
+    title: 'Reporte de ingresos',
+    footer: 'Ir a Citas',
+    img: 'https://www.svgrepo.com/show/6268/money.svg',
+    link: '/report-income'
   }
 ]

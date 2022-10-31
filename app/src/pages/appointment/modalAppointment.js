@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2'
 
-const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, disabled }) => {
+const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTitle, disabled }) => {
   const {
     register,
     handleSubmit,
@@ -25,12 +25,15 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
 
   const [textButtonSearch, setTextButtonSearch] = useState('Buscar')
   const [messageNoFound, setMessageNoFound] = useState('')
-  const [classNameSchool, setClassNameSchool] = useState('hidden')
-  const [classNameReschedule, setClassNameReschedule] = useState('hidden')
+  const [disabledNameSchool, setDisabledNameSchool] = useState(true)
+  const [disabledReschedule, setDisabledReschedule] = useState(true)
+  // const [disabledPaid, setDisabledPaid] = useState(true)
+  // const [disableAmount, setDisabledAmount] = useState(true)
   const [textButtonSave, setTextButtonSave] = useState('Reservar')
   const [textButtonConfirm, setTextButtonConfirm] = useState('Confirmar')
   const [textButtonCancel, setTextButtonCancel] = useState('Cancelar')
   const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
+  // const [reqAmount, setReqAmount] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -45,13 +48,13 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
       setValue('school', eventEdit.school)
       setValue('nameschool', eventEdit.school ? eventEdit.nameschool : '')
       setValue('reschedule', eventEdit.reschedule)
-      setValue('rescheduledate', eventEdit.reschedule ? new Date(eventEdit.rescheduledate).toISOString().split('T')[0] : '')
+      setValue('rescheduledate', eventEdit.reschedule ? new Date(eventEdit.rescheduledate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0])
       setValue('observations', eventEdit.observations)
       setValue('price', eventEdit.price)
       setValue('campus', eventEdit.campus)
 
-      eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
-      eventEdit.reschedule ? setClassNameReschedule('block') : setClassNameReschedule('hidden')
+      // eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
+      // eventEdit.reschedule ? setClassNameReschedule('block') : setClassNameReschedule('hidden')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -78,7 +81,6 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
 
   const handleSave = async (data) => {
     setTextButtonSave('Verificando...')
-
     const dateAppointment = new Date(data.appointmentdate + ' ' + data.appointmenttime)
     if (Date.parse(dateAppointment) < Date.parse(new Date())) {
       setTextButtonSave('Reservar')
@@ -95,7 +97,8 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
       campus,
       appointmentdate: new Date(String(data.appointmentdate).split('/').reverse().join('-')).toISOString(),
       postulantId: data.id,
-      rescheduledate: data.reschedule ? data.rescheduledate : ''
+      rescheduledate: data.reschedule ? data.rescheduledate : '',
+      paymentstatus: data.paid ? data.paymentstatus : ''
     }
 
     const resultOne = await postRequest('appointment/verifyduplicatedtime', newData, token)
@@ -126,6 +129,32 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
         setTextButtonSave('Reservar')
       })
   }
+
+  // eslint-disable-next-line no-unused-vars
+  /* const saveAttentionDetail = async (data) => {
+    const newAttentionDetail = {
+      postulantId: data.postulant.id,
+      userId: user,
+      recordId: '',
+      appointmentId: data.id,
+      price: data.price,
+      paid: false,
+      paymentstatus: '',
+      paymentdetail: []
+    }
+    await postRequest('attention-detail', newAttentionDetail, token)
+      .then(response => {
+        console.log(response)
+        notificationSuccess('Detalle de atencion registrada satisfactoriamente')
+        reload()
+        showModal()
+      })
+      .catch(e => {
+        console.log(e)
+        if (e.response.data.error === 'token expired') return navigate('/session-expired')
+        notificationError()
+      })
+  } */
 
   const handleConfirmed = async () => {
     setTextButtonConfirm('Confirmando...')
@@ -242,6 +271,15 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
     resetField('appointmenttime')
     show()
   }
+
+  /* const handleChangePaymentStatus = (e) => {
+    if (e.target.value === 'parcial') {
+      setDisabledAmount(false)
+    } else {
+      setDisabledAmount(true)
+      setValue('amount', getValues('price'))
+    }
+  } */
 
   return (
     <div className='fixed z-50 top-0 left-0 w-full h-screen bg-stone-500 bg-opacity-60'>
@@ -402,10 +440,10 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                           onChangeCapture={() => {
                             if (!getValues('school')) {
                               register('nameschool', { required: true })
-                              setClassNameSchool('block')
+                              setDisabledNameSchool(false)
                             } else {
                               register('nameschool', { required: false })
-                              setClassNameSchool('hidden')
+                              setDisabledNameSchool(true)
                             }
                           }}
                           {...register('school')}
@@ -414,7 +452,8 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       </div>
                       <input
                         type='text'
-                        className={`input-text ${classNameSchool}`}
+                        className='input-text disabled:bg-slate-100'
+                        disabled={disabledNameSchool}
                         {...register('nameschool')}
                       />
                       {errors?.nameschool?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
@@ -430,11 +469,11 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                           onChangeCapture={() => {
                             if (!getValues('reschedule')) {
                               register('rescheduledate', { required: true })
-                              setClassNameReschedule('block')
+                              setDisabledReschedule(false)
                               setValue('rescheduledate', new Date().toISOString().split('T')[0])
                             } else {
                               register('rescheduledate', { required: false })
-                              setClassNameReschedule('hidden')
+                              setDisabledReschedule(true)
                             }
                           }}
                           {...register('reschedule')}
@@ -443,7 +482,8 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       </div>
                       <input
                         type='date'
-                        className={`input-text ${classNameReschedule}`}
+                        className='input-text disabled:bg-slate-100'
+                        disabled={disabledReschedule}
                         defaultValue={new Date().toISOString().split('T')[0]}
                         {...register('rescheduledate')}
                       />
@@ -468,6 +508,60 @@ const ModalAppointment = ({ show, token, reload, campus, eventEdit, textTitle, d
                       {errors?.price?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                     </div>
                   </div>
+
+                  {/* <div className='col-span-12 md:col-span-6'>
+                    <div className='flex justify-center items-center gap-5'>
+                      <div className='flex flex-col mb-1'>
+                        <div className='flex gap-4'>
+                          <input
+                            id='paid'
+                            type='checkbox'
+                            defaultValue={false}
+                            onChangeCapture={() => {
+                              if (!getValues('paid')) {
+                                register('paymentstatus', { required: true })
+                                setReqAmount(true)
+                                setDisabledPaid(false)
+                                setValue('amount', getValues('price'))
+                              } else {
+                                register('paymentstatus', { required: false })
+                                setReqAmount(false)
+                                setDisabledPaid(true)
+                                setValue('amount', '')
+                              }
+                            }}
+                            {...register('paid')}
+                          />
+                          <label htmlFor='paid'>¿Pagado?</label>
+                        </div>
+                        <select
+                          disabled={disabledPaid}
+                          className='input-select disabled:bg-slate-100'
+                          {...register('paymentstatus')}
+                          onChangeCapture={(e) => { handleChangePaymentStatus(e) }}
+                        >
+                          <option value='total'>Total</option>
+                          <option value='parcial'>Parcial</option>
+                        </select>
+                        {errors?.paymentstatus?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
+                      </div>
+                      <div className='flex flex-col mb-1'>
+                        <span className='text-sm font-medium text-gray-700'>
+                          Importe
+                        </span>
+                        <div className='flex items-center gap-4'>
+                          <span>{'S/. '}</span>
+                          <input
+                            type='text'
+                            className='input-text text-end disabled:bg-slate-100'
+                            disabled={disableAmount}
+                            {...register('amount', { required: reqAmount })}
+                          />
+                        </div>
+                        {errors?.amount?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
+                      </div>
+                    </div>
+                  </div> */}
 
                   <div className='col-span-12'>
                     <div className='flex flex-col mb-1'>

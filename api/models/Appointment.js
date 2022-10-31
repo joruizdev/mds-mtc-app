@@ -27,7 +27,10 @@ const appointmentSchema = new Schema({
   reason: String,
   observations: String,
   attended: Boolean,
-  price: Number
+  price: Number,
+  paid: Boolean,
+  paymentstatus: String,
+  paymentdetail: Array
 
 })
 

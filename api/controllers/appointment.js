@@ -3,6 +3,7 @@ const Appointment = require('../models/Appointment')
 const Postulant = require('../models/Postulant')
 const User = require('../models/User')
 const userExtractor = require('../middleware/userExtractor')
+const AttentionDetail = require('../models/AttentionDetail')
 
 appointmentRouter.get('/', async (req, res) => {
   const appointments = await Appointment.find({}).populate('postulant', {
@@ -141,7 +142,10 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     rescheduledate = '',
     observations,
     price,
-    postulantId
+    paid,
+    postulantId,
+    paymentstatus,
+    paymentdetail
   } = body
 
   const { userId } = req
@@ -165,6 +169,9 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     reason: '',
     observations,
     price,
+    paid,
+    paymentstatus,
+    paymentdetail,
     attended: false,
     postulant: postulantId,
     user: userId
@@ -176,10 +183,22 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     user.appointment = user.appointment.concat(savedAppointment._id)
     postulant.appointment = postulant.appointment.concat(savedAppointment._id)
 
+    const attentionDetail = new AttentionDetail({
+      postulant: postulantId,
+      user: userId,
+      appointment: savedAppointment.id,
+      price,
+      paid: false,
+      paymentstatus: '',
+      paymentdetail: []
+    })
+
+    const saveAttentionDetail = await attentionDetail.save()
+
     await user.save()
     await postulant.save()
 
-    res.status(201).json(savedAppointment)
+    res.status(201).json([savedAppointment, saveAttentionDetail])
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
@@ -204,7 +223,10 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     canceled,
     reason,
     attended,
-    price
+    price,
+    paid,
+    paymentstatus,
+    paymentdetail
   } = req.body
 
   const newAppointmentInfo = {
@@ -222,7 +244,10 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     canceled,
     reason,
     attended,
-    price
+    price,
+    paid,
+    paymentstatus,
+    paymentdetail
   }
 
   Appointment.findByIdAndUpdate(id, newAppointmentInfo, { new: true })

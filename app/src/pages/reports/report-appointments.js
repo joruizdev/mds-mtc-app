@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import Spinner from '../../components/spinner'
 import { postRequest } from '../../services/services'
+import ExportToExcel from '../../components/exportToExcel'
 
 const ReportAppointments = () => {
   const [dateStart, setDateStart] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [dateEnd, setDateEnd] = useState(new Date().toLocaleDateString().split('/').reverse().join('-'))
   const [appointments, setAppointments] = useState([])
+  const [newAppointments, setNewAppointments] = useState([])
   const [pending, setPending] = useState()
   const [token, setToken] = useState('')
   const [campus, setCampus] = useState('')
@@ -43,7 +45,24 @@ const ReportAppointments = () => {
         .then(response => {
           setAppointments(response)
           setPending(false)
-          console.log(response)
+          setNewAppointments([])
+          // eslint-disable-next-line array-callback-return
+          response.map(elem => {
+            const appointment = {
+              Postulante: elem.postulant.lastname + ' ' + elem.postulant.name,
+              TipoDoc: elem.postulant.typedoc,
+              NroDoc: elem.postulant.nrodoc,
+              Fecha: new Date(elem.date).toLocaleDateString(),
+              Local: elem.campus,
+              TipoLic: elem.typelic,
+              TipoProc: elem.typeproc,
+              FechaCita: new Date(elem.appointmentdate).toLocaleDateString(),
+              HoraCita: elem.appointmenttime,
+              CostoExamen: elem.price,
+              Estado: (elem.canceled) ? 'Cancelado' : (elem.confirmed) ? 'Confirmado' : 'Por confirmar'
+            }
+            setNewAppointments(newAppointments => newAppointments.concat(appointment))
+          })
         })
     }
   }
@@ -110,7 +129,7 @@ const ReportAppointments = () => {
     },
     {
       name: 'Estado',
-      selector: row => row.canceled ? 'Cancelado' : '',
+      selector: row => row.canceled ? 'Cancelado' : (row.confirmed ? 'Confirmado' : 'Por confirmar'),
       sortable: true
     },
     {
@@ -127,9 +146,21 @@ const ReportAppointments = () => {
 
   const conditionalRowStyles = [
     {
-      when: row => row.canceled === true,
+      when: row => row.canceled,
       style: {
         color: 'red'
+      }
+    },
+    {
+      when: row => row.confirmed,
+      style: {
+        color: 'green'
+      }
+    },
+    {
+      when: row => !row.confirmed && !row.canceled,
+      style: {
+        color: 'blue'
       }
     }
   ]
@@ -221,6 +252,7 @@ const ReportAppointments = () => {
             placeholder='Buscar'
             onChange={(e) => setQuery(e.target.value)}
           />
+          <ExportToExcel data={newAppointments} fileName='Lista de records' />
         </div>
         <div className='py-28 md:py-14 lg:py-0'>
           <DataTable
