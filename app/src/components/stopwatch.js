@@ -172,7 +172,7 @@ function Stopwatch ({
 
   return (
     <>
-      <div className='relative flex flex-col text-sm leading-6 items-start bg-white py-10 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2'>
+      <div className='relative flex flex-col text-sm leading-6 items-start bg-white py-10 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2 hover:scale-105 hover:transition-all'>
         <div className={classOrder}>{order}</div>
         <div className='pt-4'>
           <p>Nombres:

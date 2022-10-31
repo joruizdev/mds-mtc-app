@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const Cards = ({ data }) => {
   return (
     <Link to={data.link}>
-      <article className='relative flex flex-col text-sm leading-6 bg-white py-10 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2'>
+      <article className='relative flex flex-col text-sm leading-6 bg-white py-10 px-4 rounded-lg shadow-lg border-stone-100 border-2 hover:border-mds-yellow hover:border-2 hover:scale-105 hover:transition-all'>
         <div className='pb-10'>
           <h1 className='text-2xl text-center'>{data.title}</h1>
         </div>
