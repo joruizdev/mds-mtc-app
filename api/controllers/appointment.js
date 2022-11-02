@@ -84,7 +84,6 @@ appointmentRouter.post('/verifyduplicated', userExtractor, async (req, res, next
 
 appointmentRouter.post('/filter', userExtractor, async (req, res, next) => {
   const { dateStart, dateEnd, campus, canceled, confirmed } = req.body
-  console.log(req.body)
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
 
   let queryFilter = {}
