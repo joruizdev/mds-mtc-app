@@ -207,15 +207,16 @@ function Stopwatch ({
         </div>
         <div className='container mx-auto text-center flex items-center justify-center gap-2'>
           {
-            typeuser.toLowerCase() !== 'admisión' &&
-              <ButtonStopwatch
-                btnStartClassName={btnStartClassName}
-                btnCloseClassName={btnCloseClassName}
-                btnResetClassName={btnResetClassName}
-                handleStart={handleStart}
-                handleClose={handleClose}
-                reset={handleReset}
-              />
+            typeuser.toLowerCase() === 'director' || typeuser.toLowerCase() === 'soporte'
+              ? <ButtonStopwatch
+                  btnStartClassName={btnStartClassName}
+                  btnCloseClassName={btnCloseClassName}
+                  btnResetClassName={btnResetClassName}
+                  handleStart={handleStart}
+                  handleClose={handleClose}
+                  reset={handleReset}
+                />
+              : ''
           }
         </div>
         <div className='flex pt-4 justify-between items-center w-full'>

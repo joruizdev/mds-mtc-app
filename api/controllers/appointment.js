@@ -188,6 +188,7 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
       appointment: savedAppointment.id,
       price,
       paid: false,
+      date: new Date().toISOString(),
       paymentstatus: '',
       paymentdetail: []
     })
