@@ -322,7 +322,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     <div className='flex flex-col mb-1'>
                       <span>Hora: </span>
                       <select
-                        className='input-select'
+                        className='input-select font-nunito'
                         disabled={disabled}
                         {...register('appointmenttime', {
                           required: true

@@ -6,7 +6,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        mont: 'Montserrat'
+        mont: 'Montserrat',
+        robotoMono: 'Roboto Mono',
+        ptSans: 'PT Sans',
+        nunito: 'Nunito'
       },
       colors: {
         'mds-blue-dark': '#242e48',

@@ -20,7 +20,9 @@ attentionDetailRouter.get('/', async (req, res) => {
     date: 1,
     paid: 1,
     typelic: 1,
-    typeproc: 1
+    typeproc: 1,
+    appointmentdate: 1,
+    appointmenttime: 1
   })
   res.json(attentionDetail)
 })

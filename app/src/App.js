@@ -14,6 +14,7 @@ import Appointment from './pages/appointment/appointment'
 import SessionExpired from './pages/session-expired/sessionExpired'
 import MenuReports from './pages/reports/menu-reports/menuResports'
 import NotFound from './pages/not-found/notFound'
+import Collection from './pages/collection/collection'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -46,6 +47,7 @@ const App = () => {
             <Route path='/report-records' element={<ReportRecords />} />
             <Route path='/report-appointments' element={<ReportAppointments />} />
             <Route path='/appointment' element={<Appointment />} />
+            <Route path='/collection' element={<Collection />} />
             {/* <Route path='/voucher' element={<Voucher />} /> */}
             <Route path='/user' element={<User />} />
             <Route path='/session-expired' element={<SessionExpired />} />

@@ -35,7 +35,7 @@ const Appointment = () => {
             const date = elem.appointmentdate.split('T')[0]
             const newDate = new Date(date + 'T' + elem.appointmenttime)
             const secondTime = new Date(newDate).getTime()
-            const addTime = 30 * 60000
+            const addTime = 15 * 60000
             const newResponse = {
               ...elem,
               start: new Date(newDate).toISOString(),
@@ -92,7 +92,6 @@ const Appointment = () => {
       setShowModal(true)
     }
   }
-
   return (
     <>
       {
@@ -112,7 +111,7 @@ const Appointment = () => {
         }
       {
         !pending
-          ? <div ref={div} className='container mx-auto shadow-sm p-5 bg-white rounded-lg'>
+          ? <div ref={div} className='container mx-auto shadow-sm p-5 bg-white rounded-lg font-nunito'>
             <FullCalendar
               ref={calendar}
               locale='es'
@@ -120,12 +119,12 @@ const Appointment = () => {
               slotMinTime='08:00:00'
               slotMaxTime='18:00:00'
               expandRows
-              height='100vh'
+              height='auto'
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
               selectable
               initialView='timeGridWeek'
-              slotDuration='00:30:00'
-              slotLabelInterval='00:30:00'
+              slotDuration='00:15:00'
+              slotLabelInterval='00:15:00'
               eventClick={(info) => showInfo(info)}
               slotLabelFormat={
                 {
