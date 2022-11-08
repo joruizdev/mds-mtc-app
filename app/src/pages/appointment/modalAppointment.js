@@ -110,7 +110,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
     const result = await postRequest('appointment/verifyduplicated', newData, token)
     if (result.length > 0) {
       setTextButtonSave('Reservar')
-      return notificationError('Ya existe una cita del postulante con fecha de hoy', 'error')
+      return notificationError('Ya existe una cita del postulante con fecha seleccionada', 'error')
     }
 
     setTextButtonSave('Reservando...')
