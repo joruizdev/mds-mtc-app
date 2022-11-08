@@ -35,7 +35,6 @@ attentionDetailRouter.post('/', userExtractor, async (req, res) => {
     recordId,
     appointmentId,
     price,
-    paid,
     paymentstatus,
     paymentdetail
   } = body
@@ -47,7 +46,6 @@ attentionDetailRouter.post('/', userExtractor, async (req, res) => {
     record: recordId,
     appointment: appointmentId,
     price,
-    paid,
     paymentstatus,
     paymentdetail
   })

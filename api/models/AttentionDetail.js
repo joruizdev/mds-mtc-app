@@ -23,7 +23,6 @@ const attentionDetailSchema = new Schema({
     ref: 'Appointment'
   },
   price: Number,
-  paid: Boolean,
   paymentstatus: String,
   paymentdetail: []
 

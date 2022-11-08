@@ -13,6 +13,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
     handleSubmit,
     setValue,
     resetField,
+    watch,
     getValues,
     formState: { errors }
   } = useForm({
@@ -33,7 +34,10 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
   const [textButtonConfirm, setTextButtonConfirm] = useState('Confirmar')
   const [textButtonCancel, setTextButtonCancel] = useState('Cancelar')
   const [textButtonUpdate, setTextButtonUpdate] = useState('Actualizar')
+  const [classBorderFielset, setClassBorderFielset] = useState('border-stone-200')
   // const [reqAmount, setReqAmount] = useState(false)
+  // const [balance, setBalance] = useState('')
+  // const [price, setPrice] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -98,7 +102,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
       appointmentdate: new Date(String(data.appointmentdate).split('/').reverse().join('-')).toISOString(),
       postulantId: data.id,
       rescheduledate: data.reschedule ? data.rescheduledate : '',
-      paymentstatus: data.paid ? data.paymentstatus : ''
+      paymentstatus: !data.paid ? 'Pendiente' : (data.paymenttype === 'total' ? 'Pago total' : 'Pago parcial')
     }
 
     const resultOne = await postRequest('appointment/verifyduplicatedtime', newData, token)
@@ -300,9 +304,9 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
 
                 <p className='hidden pb-4 text-end'>{`Local: ${eventEdit.campus}`}</p>
 
-                <div className='grid grid-cols-12 gap-5'>
+                <div className='grid grid-cols-12 gap-5 mb-3'>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <span>Fecha: </span>
                       <input
@@ -318,7 +322,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     {errors?.appointmentdate?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <span>Hora: </span>
                       <select
@@ -336,7 +340,11 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     {errors?.appointmenttime?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                </div>
+
+                <div className='grid grid-cols-12 gap-5'>
+
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col'>
                       <span className='text-sm font-medium text-gray-700 mb-1'>
                         Buscar postulante
@@ -363,7 +371,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     {...register('id')}
                   />
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <span className='text-sm font-medium text-gray-700'>
                         Apellidos y nombres
@@ -380,7 +388,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div>
                       <div className='flex flex-col mb-1'>
                         <span className='text-sm font-medium text-gray-700'>
@@ -408,7 +416,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div>
                       <div className='flex flex-col mb-1'>
                         <span className='text-sm font-medium text-gray-700'>
@@ -430,7 +438,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <div className='flex gap-4'>
                         <input
@@ -460,7 +468,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <div className='flex gap-4'>
                         <input
@@ -490,7 +498,7 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12 md:col-span-3'>
                     <div className='flex flex-col mb-1'>
                       <span className='text-sm font-medium text-gray-700'>
                         Costo de examen
@@ -509,60 +517,6 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
 
-                  {/* <div className='col-span-12 md:col-span-6'>
-                    <div className='flex justify-center items-center gap-5'>
-                      <div className='flex flex-col mb-1'>
-                        <div className='flex gap-4'>
-                          <input
-                            id='paid'
-                            type='checkbox'
-                            defaultValue={false}
-                            onChangeCapture={() => {
-                              if (!getValues('paid')) {
-                                register('paymentstatus', { required: true })
-                                setReqAmount(true)
-                                setDisabledPaid(false)
-                                setValue('amount', getValues('price'))
-                              } else {
-                                register('paymentstatus', { required: false })
-                                setReqAmount(false)
-                                setDisabledPaid(true)
-                                setValue('amount', '')
-                              }
-                            }}
-                            {...register('paid')}
-                          />
-                          <label htmlFor='paid'>¿Pagado?</label>
-                        </div>
-                        <select
-                          disabled={disabledPaid}
-                          className='input-select disabled:bg-slate-100'
-                          {...register('paymentstatus')}
-                          onChangeCapture={(e) => { handleChangePaymentStatus(e) }}
-                        >
-                          <option value='total'>Total</option>
-                          <option value='parcial'>Parcial</option>
-                        </select>
-                        {errors?.paymentstatus?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
-                      </div>
-                      <div className='flex flex-col mb-1'>
-                        <span className='text-sm font-medium text-gray-700'>
-                          Importe
-                        </span>
-                        <div className='flex items-center gap-4'>
-                          <span>{'S/. '}</span>
-                          <input
-                            type='text'
-                            className='input-text text-end disabled:bg-slate-100'
-                            disabled={disableAmount}
-                            {...register('amount', { required: reqAmount })}
-                          />
-                        </div>
-                        {errors?.amount?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
-                      </div>
-                    </div>
-                  </div> */}
-
                   <div className='col-span-12'>
                     <div className='flex flex-col mb-1'>
                       <span className='text-sm font-medium text-gray-700'>
@@ -576,6 +530,143 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
                     </div>
                   </div>
                 </div>
+                <br />
+                <hr />
+                <br />
+                <fieldset className={`border ${classBorderFielset} p-4`}>
+                  <legend className='px-4'>
+                    <input
+                      className='px-2'
+                      id='paid'
+                      type='checkbox'
+                      defaultValue={false}
+                      onChangeCapture={() => {
+                        if (!getValues('paid')) {
+                          setClassBorderFielset('border-mds-blue')
+                        } else {
+                          setClassBorderFielset('border-stone-300')
+                        }
+                      }}
+                      {...register('paid')}
+                    />
+                    <label className='px-2' htmlFor='paid'>Realizar pago</label>
+                  </legend>
+                  <div
+                    className='grid grid-cols-12 gap-5'
+                  >
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <div className='flex flex-col mb-1'>
+                        <span>Tipo de pago</span>
+                        <select
+                          className='input-select disabled:bg-slate-100'
+                          {...register('paymenttype')}
+                        >
+                          <option value='total'>Total</option>
+                          <option value='parcial'>Parcial</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <div className='flex gap-5'>
+                        <div className='flex flex-col mb-1'>
+                          <span className='text-sm font-medium text-gray-700'>
+                            Importe
+                          </span>
+                          <input
+                            type='text'
+                            className='input-text w-36 disabled:bg-slate-100'
+                            {...register('amount')}
+                          />
+                        </div>
+                        <div className='flex flex-col mb-1'>
+                          <span className='text-sm font-medium text-gray-700'>
+                            Saldo
+                          </span>
+                          <input
+                            type='text'
+                            className='input-text w-36 disabled:bg-slate-100'
+                            readOnly
+                            {...register('balance')}
+                            value={String(Number(watch('price')) - Number(watch('amount')))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <div className='flex flex-col mb-1'>
+                        <span className='text-sm font-medium text-gray-700'>
+                          Fecha de pago
+                        </span>
+                        <input
+                          type='date'
+                          className='input-date disabled:bg-slate-100'
+                          defaultValue={new Date().toISOString().split('T')[0]}
+                          {...register('paymentdate')}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <span>Forma de pago</span>
+                      <select
+                        className='input-select disabled:bg-slate-100'
+                        {...register('waytopay')}
+                      >
+                        <option>Transferencia / Depósito</option>
+                        <option>Tarjeta crédito / débito</option>
+                        <option>Efectivo</option>
+                      </select>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <div className='flex flex-col mb-1'>
+                        <span className='text-sm font-medium text-gray-700'>
+                          Nro. de operación
+                        </span>
+                        <input
+                          type='text'
+                          className='input-text disabled:bg-slate-100'
+                          {...register('operationnumber')}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-6'>
+                      <div className='flex flex-col mb-1'>
+                        <span className='text-sm font-medium text-gray-700'>
+                          Observaciones
+                        </span>
+                        <input
+                          type='text'
+                          className='input-text disabled:bg-slate-100'
+                          {...register('paymentobservations')}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-span-12 md:col-span-3'>
+                      <div className=''>
+                        <span>Adjunto</span>
+                        <label className='block'>
+                          <input
+                            type='file' className='block w-full text-sm text-slate-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-mds-blue
+                    hover:file:bg-blue-100 disabled:bg-slate-300 disabled:rounded-md
+                  '
+                            {...register('attached')}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+                </fieldset>
 
               </div>
             </div>

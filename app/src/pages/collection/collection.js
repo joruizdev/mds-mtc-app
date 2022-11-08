@@ -60,27 +60,22 @@ const Collection = () => {
     },
     {
       name: 'Tipo de Lic.',
-      selector: row => row.appointment.typelic,
+      selector: row => row.appointment ? row.appointment.typelic : row.record.typelic,
       sortable: true
     },
     {
       name: 'Tipo de proc.',
-      selector: row => row.appointment.typeproc,
+      selector: row => row.appointment ? row.appointment.typeproc : row.record.typeproc,
       sortable: true
     },
     {
       name: 'Fecha de cita',
-      selector: row => String(new Date(row.appointment.date).toISOString().split('T')[0]).split('-').reverse().join('/'),
-      sortable: true
-    },
-    {
-      name: '¿Pagado?',
-      selector: row => (row.paid) ? 'Pagado' : 'Pendiente',
+      selector: row => String(new Date(row.appointment ? row.appointment.date : row.record.date).toISOString().split('T')[0]).split('-').reverse().join('/'),
       sortable: true
     },
     {
       name: 'Estado',
-      selector: row => row.paymentstatus,
+      selector: row => <span className='capitalize'>{row.paymentstatus}</span>,
       sortable: true
     }
   ]

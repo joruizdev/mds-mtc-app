@@ -144,7 +144,15 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     paid,
     postulantId,
     paymentstatus,
-    paymentdetail
+    paymentdetail,
+    amount,
+    balance,
+    paymentdate,
+    waytopay,
+    paymenttype,
+    operationnumber,
+    paymentobservations,
+    attached
   } = body
 
   const { userId } = req
@@ -168,7 +176,6 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     reason: '',
     observations,
     price,
-    paid,
     paymentstatus,
     paymentdetail,
     attended: false,
@@ -182,18 +189,34 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     user.appointment = user.appointment.concat(savedAppointment._id)
     postulant.appointment = postulant.appointment.concat(savedAppointment._id)
 
+    let dataPaymentDetaild = []
+    if (paid) {
+      dataPaymentDetaild = [
+        {
+          amount,
+          balance,
+          paymentdate,
+          paymenttype,
+          waytopay,
+          operationnumber,
+          paymentobservations,
+          attached
+        }
+      ]
+    }
+
     const attentionDetail = new AttentionDetail({
       postulant: postulantId,
       user: userId,
       appointment: savedAppointment.id,
       price,
-      paid: false,
       date: new Date().toISOString(),
-      paymentstatus: '',
-      paymentdetail: []
+      paymentstatus,
+      paymentdetail: dataPaymentDetaild,
+      balance
     })
 
-    const saveAttentionDetail = await attentionDetail.save()
+    const saveAttentionDetail = attentionDetail.save()
 
     await user.save()
     await postulant.save()
@@ -224,7 +247,6 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     reason,
     attended,
     price,
-    paid,
     paymentstatus,
     paymentdetail
   } = req.body
@@ -245,7 +267,6 @@ appointmentRouter.put('/:id', userExtractor, (req, response, next) => {
     reason,
     attended,
     price,
-    paid,
     paymentstatus,
     paymentdetail
   }

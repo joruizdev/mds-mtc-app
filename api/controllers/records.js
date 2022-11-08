@@ -3,6 +3,7 @@ const Record = require('../models/Record')
 const Postulant = require('../models/Postulant')
 const User = require('../models/User')
 const userExtractor = require('../middleware/userExtractor')
+const AttentionDetail = require('../models/AttentionDetail')
 
 recordRouter.get('/', async (req, res) => {
   const records = await Record.find({}).populate('postulant', {
@@ -140,10 +141,23 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     user.records = user.records.concat(savedRecord._id)
     postulant.records = postulant.records.concat(savedRecord._id)
 
+    const attentionDetail = new AttentionDetail({
+      postulant: postulantId,
+      user: userId,
+      record: savedRecord.id,
+      price,
+      paid: false,
+      date: new Date().toISOString(),
+      paymentstatus: '',
+      paymentdetail: []
+    })
+
+    const saveAttentionDetail = await attentionDetail.save()
+
     await user.save()
     await postulant.save()
 
-    res.status(201).json(savedRecord)
+    res.status(201).json([savedRecord, saveAttentionDetail])
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
