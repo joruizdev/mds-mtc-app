@@ -54,7 +54,6 @@ appointmentRouter.post('/verifyduplicatedtime', userExtractor, async (req, res, 
     typedoc: 1,
     nrodoc: 1
   }).then(response => {
-    console.log(response)
     return (response) ? res.json(response) : res.status(404).end()
   })
     .catch(err => next(err))

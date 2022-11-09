@@ -87,9 +87,6 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
       return notificationError('No se puede reservar una cita con fecha y hora menor que la fecha y hora actual')
     }
 
-    console.log()
-    // const newDate = new Date(getValues('appointmentdate')).toLocaleDateString().split('/').reverse().join('-')
-
     const newData = {
       ...data,
       dateStart: getValues('appointmentdate'),
