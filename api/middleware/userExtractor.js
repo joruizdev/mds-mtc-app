@@ -12,7 +12,6 @@ module.exports = (req, res, next) => {
   if (!token || !decodeToken.id) {
     return res.status(401).json({ error: 'token missing or invalid' })
   }
-
   const { id: userId } = decodeToken
   req.userId = userId
 

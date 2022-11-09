@@ -45,9 +45,7 @@ appointmentRouter.post('/verifyduplicatedtime', userExtractor, async (req, res, 
   const { dateStart, dateEnd, canceled, campus, appointmenttime } = req.body
   const newDateEnd = new Date(dateEnd).setDate(new Date(dateEnd).getDate() + 1)
 
-  let queryFilter = {}
-
-  queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus, appointmenttime }
+  const queryFilter = { $and: [{ date: { $gte: new Date(dateStart) } }, { date: { $lt: new Date(newDateEnd) } }], canceled, campus, appointmenttime }
 
   Appointment.find(queryFilter).populate('postulant', {
     _id: 1,
@@ -56,6 +54,7 @@ appointmentRouter.post('/verifyduplicatedtime', userExtractor, async (req, res, 
     typedoc: 1,
     nrodoc: 1
   }).then(response => {
+    console.log(response)
     return (response) ? res.json(response) : res.status(404).end()
   })
     .catch(err => next(err))

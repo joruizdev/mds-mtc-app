@@ -87,12 +87,13 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
       return notificationError('No se puede reservar una cita con fecha y hora menor que la fecha y hora actual')
     }
 
-    const newDate = new Date().toLocaleDateString().split('/').reverse().join('-')
+    console.log()
+    // const newDate = new Date(getValues('appointmentdate')).toLocaleDateString().split('/').reverse().join('-')
 
     const newData = {
       ...data,
-      dateStart: newDate,
-      dateEnd: newDate,
+      dateStart: getValues('appointmentdate'),
+      dateEnd: getValues('appointmentdate'),
       canceled: false,
       campus,
       appointmentdate: new Date(String(data.appointmentdate).split('/').reverse().join('-')).toISOString(),
@@ -101,10 +102,13 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
       paymentstatus: data.paid ? data.paymentstatus : ''
     }
 
+    console.log(newData)
+
     const resultOne = await postRequest('appointment/verifyduplicatedtime', newData, token)
+    console.log(resultOne)
     if (resultOne.length > 0) {
       setTextButtonSave('Reservar')
-      return notificationError(`Ya existe una cita reservada en el horario de las ${data.appointmenttime} horas`, 'error')
+      return notificationError('Ya existe una cita reservada con la fecha y hora seleccionada', 'error')
     }
 
     const result = await postRequest('appointment/verifyduplicated', newData, token)
