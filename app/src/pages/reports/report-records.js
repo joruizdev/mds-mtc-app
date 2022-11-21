@@ -218,11 +218,11 @@ const ReportRecords = () => {
             placeholder='Buscar'
             onChange={(e) => setQuery(e.target.value)}
           />
-          <ExportToExcel data={newRecords} fileName='Lista de records' />
+          <ExportToExcel data={newRecords} fileName='Lista de Exámenes' />
         </div>
         <div className='py-28 md:py-14 lg:py-0'>
           <DataTable
-            title='Lista de records'
+            title='Lista de exámenes'
             columns={columns}
             data={search(records)}
             pagination

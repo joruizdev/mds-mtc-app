@@ -57,8 +57,8 @@ const ModalAppointment = ({ show, token, user, reload, campus, eventEdit, textTi
       setValue('price', eventEdit.price)
       setValue('campus', eventEdit.campus)
 
-      // eventEdit.school ? setClassNameSchool('block') : setClassNameSchool('hidden')
-      // eventEdit.reschedule ? setClassNameReschedule('block') : setClassNameReschedule('hidden')
+      eventEdit.school && setDisabledNameSchool(false)
+      eventEdit.reschedule && setDisabledReschedule(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

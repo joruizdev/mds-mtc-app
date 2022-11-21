@@ -24,7 +24,7 @@ const attentionDetailSchema = new Schema({
   },
   price: Number,
   paymentstatus: String,
-  paymentdetail: []
+  paymentdetail: Array
 
 })
 

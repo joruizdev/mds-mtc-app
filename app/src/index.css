@@ -95,3 +95,19 @@ code {
 .help {
   background-color: #e4a72b;
 }
+
+.check-all{
+  @apply w-6 h-6 bg-green-500 p-2 rounded-full items-center flex justify-center text-stone-50 before:content-["✓"] before:font-bold;
+}
+
+.check{
+  @apply w-6 h-6 bg-mds-yellow p-2 rounded-full items-center flex justify-center text-stone-50 before:content-["✓"] before:font-bold;
+}
+
+.pending{
+  @apply w-6 h-6 bg-slate-400 p-2 rounded-full items-center flex justify-center text-stone-50 before:content-["-"] before:font-bold;
+}
+
+.resch {
+  @apply w-6 h-6  bg-[url('https://www.svgrepo.com/show/284648/calendar.svg')];
+}

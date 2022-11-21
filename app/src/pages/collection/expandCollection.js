@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { useForm } from 'react-hook-form'
+import { putRequest } from '../../services/services'
 
 const ExpandCollection = ({ data }) => {
-  const [paymentDetail, setPaymentDetail] = useState([])
   const {
     register,
     handleSubmit,
@@ -12,18 +12,37 @@ const ExpandCollection = ({ data }) => {
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      id: '0',
-      appointmenttime: '08:00:00'
+      id: '0'
     }
   })
+  const [paymentDetail, setPaymentDetail] = useState([])
+  const [token, setToken] = useState(null)
 
-  const onSubmit = (data) => {
-
+  const onSubmit = async data => {
+    console.log(data)
+    await putRequest('attention-detail/addpaymentdetail', data, token)
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedSystemAppUser')
+
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setToken(user.token)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
+
+  useEffect(() => {
     setPaymentDetail(data.paymentdetail)
-    setValue('paymentstatus', data.paymentstatus)
+    setValue('paymentstatus', String(data.paymentstatus).toLowerCase())
+    setValue('id', data.id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -55,7 +74,11 @@ const ExpandCollection = ({ data }) => {
     }
   ]
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className='bg-stone-50 p-2'>
+      <input
+        type='hidden'
+        {...register('id')}
+      />
       <div className='flex gap-10 justify-between'>
         <div className='py-2'>
           <h2 className='font-semibold pb-2'>Datos del cliente</h2>
@@ -111,12 +134,12 @@ const ExpandCollection = ({ data }) => {
           <div className='col-span-3'>
             <span>Estado: </span>
             <select
-              className='input-select'
+              className='input-select normal-case'
               {...register('paymentstatus', {
                 required: true
               })}
             >
-              <option value='pendiente'>Pendiente de pago</option>
+              <option value='pendiente'>Pendiente</option>
               <option value='pago parcial'>Pago parcial</option>
               <option value='pago total'>Pago total</option>
             </select>
@@ -191,26 +214,21 @@ const ExpandCollection = ({ data }) => {
           <input
             type='text'
             className='input-text'
-            {...register('paymentobservations', {
-              required: true
-            })}
+            {...register('paymentobservations')}
           />
-          {errors?.paymentobservations?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}
         </div>
         <div className=''>
           <span>Adjunto</span>
           <label className='block'>
-            <span className='sr-only'>Choose profile photo</span>
             <input
-              type='file' className='block w-full text-sm text-slate-500
+              type='file' className='block w-full text-sm text-slate-500 border shadow-sm border-slate-300 rounded-md
       file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
+      file:rounded-md file:border-0
       file:text-sm file:font-semibold
       file:bg-blue-50 file:text-mds-blue
       hover:file:bg-blue-100
     '
               {...register('attached', {
-                required: true
               })}
             />
           </label>
@@ -226,8 +244,16 @@ const ExpandCollection = ({ data }) => {
         </div>
       </div>
       <div className='flex gap-4 py-4 justify-end'>
-        <button className='btn-red-light'>Canelar</button>
-        <input type='submit' className='btn-blue-dark' value='Guardar' />
+        {
+          String(data.paymentstatus).toLowerCase() === 'pago total'
+            ? <button className='btn-red-light disabled:bg-slate-200 disabled:border-0 disabled:text-stone-500' disabled>Canelar</button>
+            : <button className='btn-red-light disabled:bg-slate-200'>Canelar</button>
+        }
+        {
+          String(data.paymentstatus).toLowerCase() === 'pago total'
+            ? <button className='btn-blue-dark bg-slate-500 hover:bg-slate-500' disabled>Guardar</button>
+            : <input type='submit' className='btn-blue-dark' value='Guardar' />
+        }
       </div>
     </form>
   )

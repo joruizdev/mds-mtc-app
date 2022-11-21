@@ -32,12 +32,12 @@ const Nav = ({ typeuser, click }) => {
             ? ''
             : <>
               <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/postulant'>Postulante</Link></div>
-              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/record'>Record</Link></div>
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/record'>Exámenes</Link></div>
               <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/appointment'>Citas</Link></div>
               <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/menu-reports'>Reportes</Link></div>
               <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/collection'>Cobranza</Link></div>
               {/* <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/reports'>Reportes</Link></div> */}
-              {/*  <div onClick={showMenu} className='hidden text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/voucher'>Voucher</Link></div> */}
+              <div onClick={showMenu} className='text-md px-2 rounded-md hover:text-stone-800 hover:bg-stone-300 cursor-pointer mx-auto text-center py-5 lg:py-2'><Link to='/voucher'>Facturación</Link></div>
             </>
         }
         {

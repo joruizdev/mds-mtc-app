@@ -306,7 +306,7 @@ const Record = () => {
         </div>
         <div className=''>
           <DataTable
-            title='Lista de postulantes'
+            title='Lista de exámenes'
             columns={columns}
             data={search(records)}
             pagination

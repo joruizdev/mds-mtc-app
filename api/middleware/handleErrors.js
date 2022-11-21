@@ -7,7 +7,7 @@ const ERROR_HANDLERS = {
 
   TokenExpiredError: res => res.status(401).send({ error: 'token expired' }),
 
-  defaultError: res => res.status(500).end()
+  defaultError: (res, { message }) => res.status(500).end({ error: message })
 }
 
 module.exports = (error, req, res, next) => {

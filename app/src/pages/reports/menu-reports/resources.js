@@ -1,6 +1,6 @@
 export const menu = [
   {
-    title: 'Reporte de records',
+    title: 'Reporte de exámenes',
     footer: 'Ir a records',
     img: 'https://www.svgrepo.com/show/66469/record.svg',
     link: '/report-records'

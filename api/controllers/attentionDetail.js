@@ -22,29 +22,21 @@ attentionDetailRouter.get('/', async (req, res) => {
     typelic: 1,
     typeproc: 1,
     appointmentdate: 1,
-    appointmenttime: 1
+    appointmenttime: 1,
+    reschedule: 1
   })
   res.json(attentionDetail)
 })
 
-attentionDetailRouter.post('/', userExtractor, async (req, res) => {
+/* attentionDetailRouter.put('/', userExtractor, async (req, res) => {
   const { body } = req
   const {
-    postulantId,
-    userId,
-    recordId,
-    appointmentId,
     price,
     paymentstatus,
     paymentdetail
   } = body
 
   const attentionDetail = new AttentionDetail({
-    date: new Date().toISOString(),
-    postulant: postulantId,
-    user: userId,
-    record: recordId,
-    appointment: appointmentId,
     price,
     paymentstatus,
     paymentdetail
@@ -57,6 +49,44 @@ attentionDetailRouter.post('/', userExtractor, async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
+  }
+}) */
+
+attentionDetailRouter.put('/addpaymentdetail/:id', userExtractor, async (req, res, next) => {
+  const { id } = req.params
+  const { body } = req
+  const {
+    paymentstatus,
+    paymenttype,
+    amount,
+    paymentdate,
+    waytopay,
+    operationnumber,
+    paymentobservations,
+    attached
+  } = body
+
+  const newPaymentDetail =
+    [{
+      paymenttype,
+      amount,
+      paymentdate,
+      waytopay,
+      operationnumber,
+      paymentobservations,
+      attached
+    }]
+
+  const result = await AttentionDetail.findById(id)
+  result.paymentdetail = result.paymentdetail.concat(newPaymentDetail)
+
+  await result.save()
+
+  try {
+    const updateAttentionDetail = await AttentionDetail.findByIdAndUpdate(id, { paymentstatus }, { new: true })
+    res.status(201).json(updateAttentionDetail)
+  } catch (error) {
+    next(error)
   }
 })
 

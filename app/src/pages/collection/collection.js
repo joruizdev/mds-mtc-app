@@ -28,9 +28,9 @@ const Collection = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, reload])
 
-  const showCollections = () => {
+  const showCollections = async () => {
     setPending(true)
-    getRequest('attention-detail')
+    await getRequest('attention-detail')
       .then(response => {
         console.log(response)
         setCollections(response)
@@ -75,7 +75,20 @@ const Collection = () => {
     },
     {
       name: 'Estado',
-      selector: row => <span className='capitalize'>{row.paymentstatus}</span>,
+      // selector: row => row.paymentstatus === 'pendiente' ? <div className='pending' /> : row.paymentstatus === 'pago parcial' ? <div className='check' /> : <div className='check-all' />,
+      selector: row => {
+        const resch = row.appointment.reschedule ? 'resch' : ''
+        console.log(row.appointment.reschedule)
+        if (String(row.paymentstatus).toLowerCase() === 'pendiente') {
+          return <div className='flex gap-2'><div className='pending' /><div className={resch} /></div>
+        } else {
+          if (row.paymentstatus === 'pago parcial') {
+            return <div className='flex gap-2'><div className='check' /><div className={resch} /></div>
+          } else {
+            return <div className='flex gap-2'><div className='check-all' /><div className={resch} /></div>
+          }
+        }
+      },
       sortable: true
     }
   ]

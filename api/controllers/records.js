@@ -141,7 +141,10 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     user.records = user.records.concat(savedRecord._id)
     postulant.records = postulant.records.concat(savedRecord._id)
 
-    const attentionDetail = new AttentionDetail({
+    // verificar si existe una cita programada del postulante
+    const verifyAttentionDetail = await AttentionDetail.findOne({ postulant: postulant.id })
+    console.log(verifyAttentionDetail)
+    /* const attentionDetail = new AttentionDetail({
       postulant: postulantId,
       user: userId,
       record: savedRecord.id,
@@ -150,14 +153,14 @@ recordRouter.post('/', userExtractor, async (req, res) => {
       date: new Date().toISOString(),
       paymentstatus: '',
       paymentdetail: []
-    })
+    }) */
 
-    const saveAttentionDetail = await attentionDetail.save()
+    // const saveAttentionDetail = await attentionDetail.save()
 
     await user.save()
     await postulant.save()
 
-    res.status(201).json([savedRecord, saveAttentionDetail])
+    res.status(201).json([savedRecord/* , saveAttentionDetail */])
   } catch (error) {
     console.log(error)
     res.status(400).json(error)

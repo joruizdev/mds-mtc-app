@@ -28,8 +28,6 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
   const showPostulantAppointment = () => {
     if (appoinmentOpc) {
       setIsAppointment(true)
-      console.log('Mostrar datos de la cita del postulante')
-      console.log(postulantAppointment)
       txtNroDoc.current.value = postulantAppointment.postulant.nrodoc
       setValue('name', postulantAppointment.postulant.lastname + ' ' + postulantAppointment.postulant.name)
       setValue('id', postulantAppointment.postulant.id)
@@ -58,7 +56,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
     const result = await postRequest('records/verifyduplicated', newData, token)
     if (result.length > 0) {
       setTextButtonSave('Guardar')
-      return notificationError('Ya existe un record del postulante con fecha de hoy', 'error')
+      return notificationError('Ya existe un examen del postulante con fecha de hoy', 'error')
     }
 
     data.postulantId = data.id
@@ -68,7 +66,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
       .then(response => {
         setTextButtonSave('Guardando...')
         console.log(response)
-        notificationSuccess('Record registrado satisfactoriamente')
+        notificationSuccess('Examen registrado satisfactoriamente')
         if (!isAppointment) {
           navigate('/')
           // navigate(0)
@@ -129,7 +127,7 @@ const RecordForm = ({ token, records, campus, postulantAppointment, appoinmentOp
 
   return (
     <div>
-      <h1 className='text-xl pb-5'>Registrar nuevo record</h1>
+      <h1 className='text-xl pb-5'>Registrar nuevo examen</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='grid grid-cols-12 gap-5'>
           <input
