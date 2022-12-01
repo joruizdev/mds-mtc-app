@@ -270,6 +270,7 @@ const UserForm = ({ token, reload, data }) => {
                 <option value='Surquillo'>Surquillo</option>
                 <option value='Villa El Salvador'>Villa El Salvador</option>
                 <option value='Huancayo'>Huancayo</option>
+                <option value='Encalada'>Encalada</option>
                 <option value='Todos'>Todos</option>
               </select>
               {errors?.campus?.type === 'required' && <p className='text-red-500 text-sm'>Este campo es requerido</p>}

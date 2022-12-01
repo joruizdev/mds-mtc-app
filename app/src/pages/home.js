@@ -93,6 +93,7 @@ const Home = () => {
                     <option value='Surquillo'>Surquillo</option>
                     <option value='Villa El Salvador'>Villa El Salvador</option>
                     <option value='Huancayo'>Huancayo</option>
+                    <option value='Encalada'>Encalada</option>
                   </select>
                 </>
               : ''
