@@ -73,6 +73,7 @@ const Appointment = () => {
       setCampus(user.campus)
       setUserId(user.id)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, reload])
 
   const handleReload = () => {

@@ -189,9 +189,9 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
     user.appointment = user.appointment.concat(savedAppointment._id)
     postulant.appointment = postulant.appointment.concat(savedAppointment._id)
 
-    let dataPaymentDetaild = []
+    let dataPaymentDetail = []
     if (paid) {
-      dataPaymentDetaild = [
+      dataPaymentDetail = [
         {
           amount,
           balance,
@@ -212,7 +212,7 @@ appointmentRouter.post('/', userExtractor, async (req, res) => {
       price,
       date: new Date().toISOString(),
       paymentstatus,
-      paymentdetail: dataPaymentDetaild,
+      paymentdetail: dataPaymentDetail,
       balance
     })
 

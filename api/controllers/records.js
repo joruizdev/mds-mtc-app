@@ -4,6 +4,7 @@ const Postulant = require('../models/Postulant')
 const User = require('../models/User')
 const userExtractor = require('../middleware/userExtractor')
 const AttentionDetail = require('../models/AttentionDetail')
+const Appointment = require('../models/Appointment')
 
 recordRouter.get('/', async (req, res) => {
   const records = await Record.find({}).populate('postulant', {
@@ -142,8 +143,12 @@ recordRouter.post('/', userExtractor, async (req, res) => {
     postulant.records = postulant.records.concat(savedRecord._id)
 
     // verificar si existe una cita programada del postulante
-    const verifyAttentionDetail = await AttentionDetail.findOne({ postulant: postulant.id })
-    console.log(verifyAttentionDetail)
+    let queryFilter = {}
+    const newDateEnd = new Date(date).setDate(new Date(date).getDate() + 1)
+    queryFilter = { $and: [{ appointmentdate: { $gte: new Date(date) } }, { appointmentdate: { $lt: new Date(newDateEnd) } }], canceled: false, campus, postulant: postulant.id }
+
+    const verifyAppointment = await Appointment.findOne(queryFilter)
+    console.log(verifyAppointment)
     /* const attentionDetail = new AttentionDetail({
       postulant: postulantId,
       user: userId,
